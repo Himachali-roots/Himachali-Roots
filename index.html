@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Himachali Roots</title>
+<meta name="description" content="Himachali Roots — a living archive of Himachali words, songs, stories and recipes."/>
+<meta property="og:title" content="Himachali Roots"/>
+<meta property="og:description" content="A living archive of Himachali words, songs, stories and recipes."/>
+<meta property="og:type" content="website"/>
+<link rel="icon" type="image/svg+xml" href="favicon.svg"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+<!-- NAV -->
+<nav class="site-nav" id="sitenav">
+  <img src="images/logo.webp" class="nav-logo" id="navlogo" style="transform:translate(-31px, 2px) scale(1.59);" alt="Himachali Roots"/>
+  <div class="nav-links" id="nav-links">
+    <a class="nav-link" href="#home" data-route="home" data-i18n="nav.home">Home</a>
+    <a class="nav-link" href="#archive" data-route="archive" data-i18n="nav.archive">Archive</a>
+    <div class="dist-wrap">
+      <button class="nav-link" data-route="districts" data-i18n="nav.districts">Districts ▾</button>
+      <div class="dist-menu">
+        <a href="#districts" data-i18n="nav.allDistricts">All Districts</a>
+        <a href="#archive?district=Shimla">Shimla</a><a href="#archive?district=Mandi">Mandi</a><a href="#archive?district=Kullu">Kullu</a>
+        <a href="#archive?district=Kangra">Kangra</a><a href="#archive?district=Solan">Solan</a><a href="#archive?district=Hamirpur">Hamirpur</a>
+        <a href="#archive?district=Una">Una</a><a href="#archive?district=Bilaspur">Bilaspur</a><a href="#archive?district=Chamba">Chamba</a>
+        <a href="#archive?district=Kinnaur">Kinnaur</a><a href="#archive?district=Lahaul%20%26%20Spiti">Lahaul &amp; Spiti</a><a href="#archive?district=Sirmaur">Sirmaur</a>
+      </div>
+    </div>
+    <a class="nav-link" href="#dictionary" data-route="dictionary" data-i18n="nav.dictionary">Dictionary</a>
+    <a class="nav-link" href="#submissions" data-route="submissions" data-i18n="nav.submit">Submit</a>
+    <a class="nav-link about-link" href="#about" data-route="about" data-i18n="nav.about">About</a>
+    <button class="nav-link lang-toggle" id="lang-toggle" type="button" aria-label="View this site in Hindi">हिंदी</button>
+  </div>
+  <div class="nav-mobile-bar">
+    <button class="nav-menu-btn" id="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links" data-i18n="nav.menu">Menu <span class="menu-caret" aria-hidden="true">▾</span></button>
+    <a class="nav-link nav-about-m" href="#about" data-route="about" data-i18n="nav.about">About</a>
+  </div>
+</nav>
+
+<main id="page-home" class="page">
+<!-- HERO -->
+<section class="hero" id="hero">
+  <!-- Layers: photos(1) → scrim(2) → stage = panel + text (3) → scroll arrow(6). Phones get their own portrait photos + panel. -->
+  <div class="hero-photos" id="hero-photos"></div>   <!-- filled from backgrounds.js -->
+  <div class="hero-scrim"></div>
+  <div class="hero-stage" id="hero-stage">
+    <picture><source media="(max-width:860px) and (max-aspect-ratio:1/1)" srcset="images/m-panel.webp"/><img src="images/hero-panel.webp" class="hero-panel" id="hero-panel" alt="Himachali Roots"/></picture>
+    <p class="hero-eyebrow" data-i18n="hero.eyebrow">Living archive from the mountains</p>
+    <p class="hero-tagline" data-i18n="hero.tagline">Preserving language &amp; culture of our home</p>
+  </div>
+  <button type="button" class="hero-scroll" id="hero-scroll" aria-label="Scroll down">↓</button>
+</section>
+
+<!-- FEATURED -->
+<section class="featured" id="featured">
+  <p class="eyebrow" style="transform:translateX(-5%)" data-i18n="feat.eyebrow">From the collection</p>
+  <h2 class="featured-heading" data-i18n="feat.heading">Stories that <em>belong</em> to the hills.</h2>
+
+  <div class="outline-layer">
+    <img class="outline-art" id="outline-art" style="transform:translateY(80px)" src="images/outline.webp" class="outline-art" alt=""/>
+  </div>
+  <div class="card-grid" id="card-grid">
+  </div>
+  <div class="woman-wrap">
+    <img src="images/woman.webp" alt="Himachali woman illustration"/>
+  </div>
+</section>
+
+<!-- MISSION -->
+<section class="mission" id="mission">
+  <div class="mission-inner">
+    <div class="mission-left">
+      <p class="eyebrow mission-eyebrow" data-i18n="mission.eyebrow">Why this exists</p>
+      <div class="mission-counter">
+        <span class="counter-num" id="counter-num"></span>
+        <span class="counter-label" data-i18n="mission.label">Voices have found their way home</span>
+      </div>
+    </div>
+    <div class="mission-right">
+      <h2 class="mission-heading serif" id="mission-heading" data-i18n="mission.heading">Keeping a place<br><em>alive in its own voice.</em></h2>
+      <p class="mission-body" data-i18n="mission.body">Himachali Roots holds the words, rhythms and memories that make a place feel like home, before they quietly disappear.</p>
+    </div>
+  </div>
+  <img src="images/logo.webp" class="mission-logo" alt=""/>
+</section>
+
+<!-- INVITATION -->
+<section class="invitation" id="invitation">
+  <div class="invitation-grid">
+    <div class="inv-left" id="inv-left">
+      <img src="images/invitation-bg.webp" class="inv-bg" alt=""/>
+      <div class="inv-overlay" id="inv-overlay"></div>
+      <div style="position:relative;z-index:2">
+        <p class="eyebrow" data-i18n="inv.eyebrow">Add to archive</p>
+        <p class="inv-daadi" data-i18n="inv.small1">A song, a word,<br>a story from<br>Amma</p>
+        <h2 class="inv-heading serif" id="inv-heading" data-i18n="inv.heading">What does home sound like to you?</h2>
+        <a href="#submissions" class="btn-terra" data-i18n="inv.cta">Share your story →</a>
+        <p class="inv-small" data-i18n="inv.body">Every language holds a world inside it. Every song remembers a season. Share a memory, a word, a lullaby and help keep the hills alive.</p>
+      </div>
+    </div>
+    <div class="inv-right" id="inv-right">
+      <img src="images/flowers.webp" class="flowers-img" alt=""/>
+      <img src="images/grandma.webp" class="grandma-img" id="grandma-img" alt="Himachali daadi illustration"/>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ARCHIVE PAGE -->
+<main id="page-archive" class="page inner-page" style="display:none">
+  <div class="page-intro">
+    <p class="eyebrow" data-i18n="archive.eyebrow">The collection</p>
+    <h1 class="page-heading serif" data-i18n="archive.heading">A little piece <em>of home.</em></h1>
+  </div>
+  <div class="inner-wrap">
+    <div id="archive-active-filters" class="active-filters"></div>
+    <div class="type-filter" id="archive-type-filter"></div>
+    <div class="archive-meta">
+      <p id="archive-count"></p>
+      <a href="#submissions" class="link-terra" data-i18n="archive.add">Add an entry</a>
+    </div>
+    <div class="grid-2" id="archive-grid"></div>
+  </div>
+</main>
+
+<!-- DISTRICTS PAGE -->
+<main id="page-districts" class="page inner-page" style="display:none">
+  <div class="page-intro">
+    <p class="eyebrow" data-i18n="districts.eyebrow">Across Himachal</p>
+    <h1 class="page-heading serif" data-i18n="districts.heading">Twelve districts, <em>one home.</em></h1>
+  </div>
+  <div class="inner-wrap">
+    <div class="districts-grid" id="districts-grid"></div>
+  </div>
+</main>
+
+<!-- DICTIONARY PAGE -->
+<main id="page-dictionary" class="page inner-page" style="display:none">
+  <div class="page-intro">
+    <p class="eyebrow" data-i18n="dict.eyebrow">Dictionary</p>
+    <h1 class="page-heading serif" data-i18n="dict.heading">Find a word <em>from the hills.</em></h1>
+    <p class="page-subtext" data-i18n="dict.sub">Search Himachali words by English, Hindi, or Pahari.</p>
+  </div>
+  <div class="inner-wrap">
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input id="dict-search" class="field search-field" placeholder="Type a word in English, Hindi, or Pahari..." data-i18n-ph="dict.ph" />
+    </div>
+    <p class="eyebrow" style="margin-top:34px" id="dict-results-label">A few words to get you started</p>
+    <div class="grid-2" id="dict-grid" style="margin-top:14px"></div>
+  </div>
+  <div class="phrase-section">
+    <div class="inner-wrap">
+      <p class="eyebrow" data-i18n="dict.phrasesEyebrow">Common phrases</p>
+      <h2 class="serif phrase-heading" data-i18n="dict.phrasesHeading">Things worth knowing <em>how to say.</em></h2>
+      <div class="phrase-grid" id="phrase-grid"></div>
+    </div>
+  </div>
+</main>
+
+<!-- SUBMISSIONS PAGE -->
+<main id="page-submissions" class="page inner-page" style="display:none">
+  <div class="inner-wrap" style="max-width:780px">
+    <div id="submission-form-wrap">
+      <p class="eyebrow" data-i18n="sub.eyebrow">Contribute to the archive</p>
+      <h1 class="page-heading serif" data-i18n="sub.heading">Share what <em>you remember.</em></h1>
+      <p class="page-subtext" style="max-width:640px" data-i18n="sub.sub">This archive belongs to everyone. Add a word, a story, a song, or any memory that carries a piece of Himachal with it.</p>
+      <p class="submission-note" data-i18n="sub.note">All contributions are reviewed with care before they become part of the public archive.</p>
+      <form id="submission-form">
+        <section class="form-section">
+          <p class="eyebrow" data-i18n="sub.s1">01 · What are you sharing</p>
+          <div class="chip-grid" id="type-chip-grid"></div>
+        </section>
+        <section class="form-section">
+          <p class="eyebrow" data-i18n="sub.s2">02 · Where is this from</p>
+          <div class="form-row-3">
+            <label class="field-block"><span class="field-label" data-i18n="sub.district">District <b>*</b></span>
+              <select class="field" id="sub-district" name="district" required><option value="" data-i18n="sub.districtPick">Select a district</option></select>
+            </label>
+            <label class="field-block"><span class="field-label" data-i18n="sub.dialect">Dialect or language name</span><input class="field" name="dialect" placeholder="eg. Mandyali, Kangri, Pahari" data-i18n-ph="sub.dialectPh"/></label>
+            <label class="field-block"><span class="field-label" data-i18n="sub.village">Village or area</span><input class="field" name="village" placeholder="eg. Karsog, Rampur, Bajaura" data-i18n-ph="sub.villagePh"/></label>
+          </div>
+        </section>
+        <section class="form-section">
+          <p class="eyebrow" data-i18n="sub.s3">03 · The contribution</p>
+          <label class="field-block"><span class="field-label" data-i18n="sub.title">Title / name <b>*</b></span><input class="field" name="title" required/></label>
+          <label class="field-block"><span class="field-label" data-i18n="sub.original">In the original script</span><textarea class="field" name="original_text" style="min-height:90px" placeholder="Devanagari or Takri, if you have it" data-i18n-ph="sub.originalPh"></textarea></label>
+          <label class="field-block"><span class="field-label" data-i18n="sub.roman">Romanised</span><textarea class="field" name="transliteration" style="min-height:70px" placeholder="How it sounds, in English letters" data-i18n-ph="sub.romanPh"></textarea></label>
+          <label class="field-block"><span class="field-label" data-i18n="sub.translation">English translation <b>*</b></span><textarea class="field" name="translation" style="min-height:90px" required></textarea></label>
+          <label class="field-block"><span class="field-label" data-i18n="sub.context">Meaning and context <b>*</b></span><textarea class="field" name="context" style="min-height:110px" placeholder="When is this used? What does it evoke?" data-i18n-ph="sub.contextPh" required></textarea></label>
+          <label class="field-block"><span class="field-label" data-i18n="sub.audio">A recording (optional)</span><input class="field" name="audio" type="file" accept="audio/*"/></label>
+        </section>
+        <section class="form-section">
+          <p class="eyebrow" data-i18n="sub.s4">04 · About you</p>
+          <div class="grid-2" style="margin-top:16px">
+            <label class="field-block" style="margin-top:0"><span class="field-label" data-i18n="sub.name">Your name <b>*</b></span><input class="field" name="contributor_name" required/></label>
+            <label class="field-block" style="margin-top:0"><span class="field-label" data-i18n="sub.email">Email (optional)</span><input class="field" name="contributor_email" type="email"/></label>
+          </div>
+          <label class="field-block"><span class="field-label" data-i18n="sub.connection">Your connection to this</span><input class="field" name="contributor_connection" placeholder="eg. My naani sang this every winter" data-i18n-ph="sub.connectionPh"/></label>
+        </section>
+        <section class="form-section">
+          <p class="eyebrow" data-i18n="sub.s5">05 · Confirm and submit</p>
+          <label class="check-row"><input type="checkbox" required/> <span data-i18n="sub.check1">I confirm this is authentic content I have the right to share.</span></label>
+          <label class="check-row"><input type="checkbox" required/> <span data-i18n="sub.check2">I understand all submissions are reviewed before publishing.</span></label>
+          <p class="form-error" id="form-error" hidden></p>
+          <button type="submit" class="btn-terra submit-btn" id="submit-btn" data-i18n="sub.submit">Submit to the archive</button>
+        </section>
+      </form>
+    </div>
+    <div id="submission-thanks" style="display:none;text-align:center;padding:100px 0;">
+      <div class="thanks-check">✓</div>
+      <p class="eyebrow" style="justify-content:center;margin-top:28px" data-i18n="sub.thanksEyebrow">Thank you</p>
+      <h1 class="page-heading serif" style="margin-top:14px" data-i18n="sub.thanksHeading">The hills <em>remember.</em></h1>
+      <p class="page-subtext" style="margin:14px auto 0;text-align:center" data-i18n="sub.thanksBody">Your contribution is in review. Every voice makes this archive more whole.</p>
+      <a href="#home" class="btn-terra" style="margin-top:28px;display:inline-flex" data-i18n="sub.thanksBtn">Return home</a>
+    </div>
+  </div>
+</main>
+
+<!-- ABOUT PAGE -->
+<main id="page-about" class="page inner-page" style="display:none">
+  <div class="inner-wrap about-wrap">
+    <p class="eyebrow" data-i18n="about.eyebrow">A note from the founder</p>
+    <h1 class="page-heading serif" data-i18n="about.heading">This began with<br><em>my daadi.</em></h1>
+    <p class="about-lead" data-i18n="about.lead">Himachal Pradesh is more than mountains. It is memory. It is a story still being told.</p>
+    <p class="about-body about-intro" data-i18n="about.intro">Many forces passed through these hills, each leaving their mark. But through all of it, something held: our culture, our traditions, our language, carried not in books but in voices, songs and stories.</p>
+    <blockquote class="about-quote about-quote-bar" data-i18n="about.quote1">That is what I grew up not knowing the value of.</blockquote>
+
+    <ol class="about-steps">
+      <li><span class="about-step-num">01</span><h2 data-i18n="about.s1.title">I didn&rsquo;t know what I had</h2>
+        <p data-i18n="about.s1.body">Every winter I visited my daadi in Mandi. I couldn&rsquo;t fully understand what she said, and I didn&rsquo;t try to. When you are young, culture just feels like background, like the mountains.</p></li>
+      <li><span class="about-step-num">02</span><h2 data-i18n="about.s2.title">Distance made it clear</h2>
+        <p data-i18n="about.s2.body">At 15 I moved away. Slowly I started missing it: the people, the winters, the way my daadi&rsquo;s house smelled, the sounds of a language I had never bothered to learn.</p></li>
+      <li><span class="about-step-num">03</span><h2 data-i18n="about.s3.title">Now I listen</h2>
+        <p data-i18n="about.s3.body">When my daadi tells me stories of her childhood, I am not just learning about her. I am learning about who I am and where I come from.</p></li>
+    </ol>
+
+    <div class="about-father">
+      <p data-i18n="about.father">My father always said that a person with no connection to their roots cannot truly grow. I was 15 when he said it and I rolled my eyes. I am 23 now and I understand exactly what he meant.</p>
+    </div>
+
+    <p class="about-mission" data-i18n="about.mission">Himachali Roots is my attempt to change that: a digital platform to preserve and share Himachali languages, folk songs, ballads, village stories and oral traditions, not as museum pieces but as living, breathing, accessible culture.</p>
+
+    <div class="about-for-wrap">
+      <p class="eyebrow" data-i18n="about.forEyebrow">Who it&rsquo;s for</p>
+      <ul class="about-for">
+        <li data-i18n="about.for1">The Himachali living away from home who wants to reconnect.</li>
+        <li data-i18n="about.for2">The child growing up abroad who wants to know where they come from.</li>
+        <li data-i18n="about.for3">Anyone who deserves to know this culture exists, that it is rich, and that it matters.</li>
+      </ul>
+    </div>
+
+    <blockquote class="about-quote about-quote-bar" data-i18n="about.quote2">Language is not only a tool for conversation. It is a tool for knowing yourself. And knowing yourself is where everything begins.</blockquote>
+    <p class="about-signoff" data-i18n="about.signoff">Pranjal Singh, Shimla &amp; Mandi</p>
+
+    <details class="about-more">
+      <summary><span class="when-closed" data-i18n="about.more">Read the full story</span><span class="when-open" data-i18n="about.less">Show less</span></summary>
+      <div class="about-more-body">
+        <p data-i18n="about.f1">Throughout history, many external powers and cultural forces passed through these hills, each leaving their mark, each changing something. But through all of it, something held. Our culture. Our traditions. Our language.</p>
+        <p data-i18n="about.f2">The people of Himachal carried what mattered most through every wave of history, not in books, but in their voices, their songs, their stories, their way of greeting a stranger and sitting with an elder.</p>
+        <p data-i18n="about.f3">Every winter vacation I visited my daadi in Mandi. There was always a barrier. I couldn&rsquo;t fully understand what she said, and I didn&rsquo;t try to. When you are young, culture doesn&rsquo;t feel like something you could lose. It just feels like background. Like the mountains, always there, always will be.</p>
+        <p data-i18n="about.f4">Then at 15 I moved away from Himachal. And slowly, the way things do when distance enters, I started missing it. Not just the place, the people, the winters, the way my daadi&rsquo;s house smelled, the sounds of a language I had never bothered to learn.</p>
+        <p data-i18n="about.f5">Now when I sit with my daadi and she tells me stories of her childhood, what life was like in her village, what the seasons meant, what the festivals felt like before roads connected everything, I am not just learning about her. I am learning about who I am and where I come from.</p>
+        <p data-i18n="about.f6">For the Himachali living away from home who wants to reconnect. For the child growing up abroad who wants to know where they come from. For anyone in the world who deserves to know that this culture exists, that it is rich, and that it matters.</p>
+      </div>
+    </details>
+  </div>
+</main>
+
+
+<!-- ENTRY DETAIL (songs, stories, recipes) -->
+<div class="entry-modal" id="entry-modal" hidden>
+  <div class="entry-modal-backdrop" data-close-modal></div>
+  <div class="entry-modal-panel" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="entry-modal-close" type="button" data-close-modal aria-label="Close">✕</button>
+    <div class="entry-modal-scroll" id="entry-modal-body"></div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer id="footer">
+  <span class="zig zig-l" aria-hidden="true"></span><span class="zig zig-r" aria-hidden="true"></span>
+  <img src="images/border.webp" class="footer-border" alt=""/>
+  <div class="footer-inner">
+    <div>
+      <h2 class="footer-heading serif" data-i18n="footer.heading">Still here.<br><em>Still listening.</em></h2>
+      <p class="footer-sub" data-i18n="footer.sub">Every voice from the hills deserves to be remembered. Reach out, contribute, or simply stay connected.</p>
+    </div>
+    <div class="footer-right">
+      <div><p class="footer-eyebrow" data-i18n="footer.write">Write to us</p><a href="mailto:contact.pahadiroots@gmail.com">contact.pahadiroots@gmail.com</a></div>
+      <div><p class="footer-eyebrow" data-i18n="footer.archive">Archive</p><p style="color:#e8f19e" data-i18n="footer.count"><span id="footer-count"></span> voices &amp; growing</p></div>
+      <div><p class="footer-eyebrow" data-i18n="footer.lang">Language</p><p class="footer-langs"><button type="button" data-set-lang="en">English</button><span aria-hidden="true"> · </span><button type="button" data-set-lang="hi">हिंदी</button></p></div>
+      <div><p class="footer-eyebrow" data-i18n="footer.follow">Follow the journey</p><a class="ig-link" href="https://www.instagram.com/the.himachali.roots/" target="_blank" rel="noopener noreferrer" aria-label="Follow @the.himachali.roots on Instagram" title="Follow @the.himachali.roots on Instagram"><svg class="ig-ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.2" cy="6.8" r="1.2" fill="currentColor"/></svg><span>@the.himachali.roots</span></a></div>
+    </div>
+  </div>
+  <img src="images/border.webp" class="footer-border flip" alt=""/>
+  <div class="footer-bottom" data-i18n="footer.bottom">Made with love for the hills · Himachali Roots © 2026 · A project to preserve what should never be forgotten.</div>
+</footer>
+
+
+<!-- LANGUAGE CHOICE (asked every time the site is opened) -->
+<div class="lang-gate" id="lang-gate" hidden role="dialog" aria-modal="true" aria-labelledby="lang-gate-title">
+  <div class="lang-gate-card">
+    <img src="images/zig-strip.webp" class="lang-gate-border" alt=""/>
+    <div class="lang-gate-body">
+      <img src="images/logo.webp" class="lang-gate-logo" alt="Himachali Roots"/>
+      <h2 class="lang-gate-title" id="lang-gate-title"><span class="t-en">Choose your language</span><span class="t-hi">अपनी भाषा चुनें</span></h2>
+      <div class="lang-options">
+        <button type="button" class="lang-opt lang-opt-en" data-set-lang="en" lang="en">
+          <em class="lang-last" hidden>Last time</em>
+          <span class="lang-glyph" aria-hidden="true">A</span>
+          <strong>English</strong>
+          <small>Read the site in English</small>
+        </button>
+        <button type="button" class="lang-opt lang-opt-hi" data-set-lang="hi" lang="hi">
+          <em class="lang-last" hidden>पिछली बार</em>
+          <span class="lang-glyph" aria-hidden="true">अ</span>
+          <strong>हिंदी</strong>
+          <small>साइट हिंदी में पढ़ें</small>
+        </button>
+      </div>
+      <p class="lang-gate-foot"><span>You can switch any time from the top of the page.</span><span>आप ऊपर से कभी भी भाषा बदल सकते हैं।</span></p>
+    </div>
+    <img src="images/zig-strip.webp" class="lang-gate-border flip" alt=""/>
+  </div>
+</div>
+
+<script src="i18n.js"></script>
+<script src="backgrounds.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

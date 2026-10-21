@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Himachali Roots</title>
-<meta name="description" content="Himachali Roots — a living archive of Himachali words, songs, stories and recipes."/>
-<meta property="og:title" content="Himachali Roots"/>
-<meta property="og:description" content="A living archive of Himachali words, songs, stories and recipes."/>
+<title>Himachali Roots — Pahari words, songs, stories and recipes</title>
+<meta name="description" content="A living Pahari dictionary and archive: Himachali words, phrases, songs, stories, recipes and traditions, with audio, Hindi and English meanings."/>
+<meta property="og:title" content="Himachali Roots — Pahari words, songs, stories and recipes"/>
+<meta property="og:description" content="A living Pahari dictionary and archive of Himachali words, songs, stories and recipes."/>
 <meta property="og:type" content="website"/>
 <link rel="icon" type="image/svg+xml" href="favicon.svg"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
@@ -25,10 +25,10 @@
       <button class="nav-link" data-route="districts" data-i18n="nav.districts">Districts ▾</button>
       <div class="dist-menu">
         <a href="#districts" data-i18n="nav.allDistricts">All Districts</a>
-        <a href="#archive?district=Shimla">Shimla</a><a href="#archive?district=Mandi">Mandi</a><a href="#archive?district=Kullu">Kullu</a>
-        <a href="#archive?district=Kangra">Kangra</a><a href="#archive?district=Solan">Solan</a><a href="#archive?district=Hamirpur">Hamirpur</a>
-        <a href="#archive?district=Una">Una</a><a href="#archive?district=Bilaspur">Bilaspur</a><a href="#archive?district=Chamba">Chamba</a>
-        <a href="#archive?district=Kinnaur">Kinnaur</a><a href="#archive?district=Lahaul%20%26%20Spiti">Lahaul &amp; Spiti</a><a href="#archive?district=Sirmaur">Sirmaur</a>
+        <a href="#district/shimla" data-d="Shimla">Shimla</a><a href="#district/mandi" data-d="Mandi">Mandi</a><a href="#district/kullu" data-d="Kullu">Kullu</a>
+        <a href="#district/kangra" data-d="Kangra">Kangra</a><a href="#district/solan" data-d="Solan">Solan</a><a href="#district/hamirpur" data-d="Hamirpur">Hamirpur</a>
+        <a href="#district/una" data-d="Una">Una</a><a href="#district/bilaspur" data-d="Bilaspur">Bilaspur</a><a href="#district/chamba" data-d="Chamba">Chamba</a>
+        <a href="#district/kinnaur" data-d="Kinnaur">Kinnaur</a><a href="#district/lahaul-spiti" data-d="Lahaul &amp; Spiti">Lahaul &amp; Spiti</a><a href="#district/sirmaur" data-d="Sirmaur">Sirmaur</a>
       </div>
     </div>
     <a class="nav-link" href="#dictionary" data-route="dictionary" data-i18n="nav.dictionary">Dictionary</a>
@@ -139,12 +139,31 @@
   </div>
 </main>
 
+<!-- DISTRICT PAGE (one page, filled in for whichever district is picked) -->
+<main id="page-district" class="page" style="display:none">
+  <section class="district-hero" id="district-hero">
+    <div class="district-hero-bg" id="district-hero-bg"></div>
+    <div class="district-hero-inner">
+      <a class="district-back" href="#districts" id="district-back"></a>
+      <p class="eyebrow" id="district-eyebrow"></p>
+      <h1 class="district-title" id="district-title"></h1>
+      <p class="district-tagline" id="district-tagline"></p>
+    </div>
+    <p class="district-credit" id="district-credit" hidden></p>
+  </section>
+  <section class="district-block" id="district-about"></section>
+  <section class="district-block district-places" id="district-places" hidden></section>
+  <section class="district-block district-gallery" id="district-gallery" hidden></section>
+  <section class="district-block district-entries" id="district-entries"></section>
+</main>
+
+
 <!-- DICTIONARY PAGE -->
 <main id="page-dictionary" class="page inner-page" style="display:none">
   <div class="page-intro">
-    <p class="eyebrow" data-i18n="dict.eyebrow">Dictionary</p>
-    <h1 class="page-heading serif" data-i18n="dict.heading">Find a word <em>from the hills.</em></h1>
-    <p class="page-subtext" data-i18n="dict.sub">Search Himachali words by English, Hindi, or Pahari.</p>
+    <p class="eyebrow" data-i18n="dict.eyebrow">Pahari Dictionary</p>
+    <h1 class="page-heading serif" data-i18n="dict.heading">What is it called <em>in Pahari?</em></h1>
+    <p class="page-subtext" data-i18n="dict.sub">Search any word in English, Hindi or Pahari, like “me”, “water” or “घर”.</p>
   </div>
   <div class="inner-wrap">
     <div class="search-wrap">
@@ -165,12 +184,14 @@
 
 <!-- SUBMISSIONS PAGE -->
 <main id="page-submissions" class="page inner-page" style="display:none">
-  <div class="inner-wrap" style="max-width:780px">
+  <div class="inner-wrap submit-wrap">
     <div id="submission-form-wrap">
+      <header class="submit-head">
       <p class="eyebrow" data-i18n="sub.eyebrow">Contribute to the archive</p>
       <h1 class="page-heading serif" data-i18n="sub.heading">Share what <em>you remember.</em></h1>
       <p class="page-subtext" style="max-width:640px" data-i18n="sub.sub">This archive belongs to everyone. Add a word, a story, a song, or any memory that carries a piece of Himachal with it.</p>
       <p class="submission-note" data-i18n="sub.note">All contributions are reviewed with care before they become part of the public archive.</p>
+      </header>
       <form id="submission-form">
         <section class="form-section">
           <p class="eyebrow" data-i18n="sub.s1">01 · What are you sharing</p>
@@ -188,12 +209,7 @@
         </section>
         <section class="form-section">
           <p class="eyebrow" data-i18n="sub.s3">03 · The contribution</p>
-          <label class="field-block"><span class="field-label" data-i18n="sub.title">Title / name <b>*</b></span><input class="field" name="title" required/></label>
-          <label class="field-block"><span class="field-label" data-i18n="sub.original">In the original script</span><textarea class="field" name="original_text" style="min-height:90px" placeholder="Devanagari or Takri, if you have it" data-i18n-ph="sub.originalPh"></textarea></label>
-          <label class="field-block"><span class="field-label" data-i18n="sub.roman">Romanised</span><textarea class="field" name="transliteration" style="min-height:70px" placeholder="How it sounds, in English letters" data-i18n-ph="sub.romanPh"></textarea></label>
-          <label class="field-block"><span class="field-label" data-i18n="sub.translation">English translation <b>*</b></span><textarea class="field" name="translation" style="min-height:90px" required></textarea></label>
-          <label class="field-block"><span class="field-label" data-i18n="sub.context">Meaning and context <b>*</b></span><textarea class="field" name="context" style="min-height:110px" placeholder="When is this used? What does it evoke?" data-i18n-ph="sub.contextPh" required></textarea></label>
-          <label class="field-block"><span class="field-label" data-i18n="sub.audio">A recording (optional)</span><input class="field" name="audio" type="file" accept="audio/*"/></label>
+          <div id="contribution-fields"></div>
         </section>
         <section class="form-section">
           <p class="eyebrow" data-i18n="sub.s4">04 · About you</p>
@@ -201,13 +217,13 @@
             <label class="field-block" style="margin-top:0"><span class="field-label" data-i18n="sub.name">Your name <b>*</b></span><input class="field" name="contributor_name" required/></label>
             <label class="field-block" style="margin-top:0"><span class="field-label" data-i18n="sub.email">Email (optional)</span><input class="field" name="contributor_email" type="email"/></label>
           </div>
-          <label class="field-block"><span class="field-label" data-i18n="sub.connection">Your connection to this</span><input class="field" name="contributor_connection" placeholder="eg. My naani sang this every winter" data-i18n-ph="sub.connectionPh"/></label>
+          <label class="field-block"><span class="field-label" data-i18n="sub.connection">Your connection to this (optional)</span><input class="field" name="contributor_connection" placeholder="eg. My naani sang this every winter" data-i18n-ph="sub.connectionPh"/></label>
         </section>
         <section class="form-section">
           <p class="eyebrow" data-i18n="sub.s5">05 · Confirm and submit</p>
           <label class="check-row"><input type="checkbox" required/> <span data-i18n="sub.check1">I confirm this is authentic content I have the right to share.</span></label>
           <label class="check-row"><input type="checkbox" required/> <span data-i18n="sub.check2">I understand all submissions are reviewed before publishing.</span></label>
-          <p class="form-error" id="form-error" hidden></p>
+          <div class="form-error" id="form-error" role="alert" hidden></div>
           <button type="submit" class="btn-terra submit-btn" id="submit-btn" data-i18n="sub.submit">Submit to the archive</button>
         </section>
       </form>
@@ -225,9 +241,12 @@
 <!-- ABOUT PAGE -->
 <main id="page-about" class="page inner-page" style="display:none">
   <div class="inner-wrap about-wrap">
+    <header class="about-head">
     <p class="eyebrow" data-i18n="about.eyebrow">A note from the founder</p>
     <h1 class="page-heading serif" data-i18n="about.heading">This began with<br><em>my daadi.</em></h1>
     <p class="about-lead" data-i18n="about.lead">Himachal Pradesh is more than mountains. It is memory. It is a story still being told.</p>
+    </header>
+    <div class="about-main">
     <p class="about-body about-intro" data-i18n="about.intro">Many forces passed through these hills, each leaving their mark. But through all of it, something held: our culture, our traditions, our language, carried not in books but in voices, songs and stories.</p>
     <blockquote class="about-quote about-quote-bar" data-i18n="about.quote1">That is what I grew up not knowing the value of.</blockquote>
 
@@ -269,6 +288,7 @@
         <p data-i18n="about.f6">For the Himachali living away from home who wants to reconnect. For the child growing up abroad who wants to know where they come from. For anyone in the world who deserves to know that this culture exists, that it is rich, and that it matters.</p>
       </div>
     </details>
+    </div>
   </div>
 </main>
 
@@ -331,6 +351,8 @@
 </div>
 
 <script src="i18n.js"></script>
+<script src="districts.js"></script>
+<script src="translit.js"></script>
 <script src="backgrounds.js"></script>
 <script src="app.js"></script>
 </body>

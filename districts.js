@@ -1,0 +1,407 @@
+/* ============================================================
+   DISTRICT PAGES: the text, photos and local favourites for each district.
+   ------------------------------------------------------------
+   Each district page is made from the entry for its district below.
+   HOW TO EDIT
+   - Change any English or Hindi text between the quotes.
+   - Photos go in  images/districts/<district>/  and are named in this file.
+     (Send me the photos and I will resize them. If a photo is missing, the page shows
+      a plain green panel instead, so nothing breaks.)
+   - To add a local favourite, copy one { name: ... } block inside "places" and edit it.
+       kind  : Heritage, Cafe, Monastery, Temple, Viewpoint, Nature, Market, Fort, Lake, Museum, Church, Walk, Food, Town, Hot springs, Theatre
+       line  : one short line on why locals love it (leave '' to show only the name)
+       photos: the pictures of the place; the first is on the tile, and if there are several, tapping the tile shows them all
+               (one picture only? you can write  photo: 'images/...'  instead)
+       map   : a Google Maps link (leave '' for none)
+   - "credit" is a small photo credit shown under the banner (leave '' for none).
+   The stories, words and phrases on each page come from Supabase by themselves:
+   they appear when an entry's District is this one.
+   ============================================================ */
+window.DISTRICT_INFO = {
+
+  shimla: {
+    // Each group of places shows 6 at a time, in a new random order on every visit; the rest open under "Show more".
+    // line   = the short line on the tile      about  = the longer text in the pop-up (a blank line starts a new paragraph)
+    // memory = a personal note shown as a quote in the pop-up
+    // photos = the first is on the tile; with several photos, any text or any video, tapping the tile opens the pop-up
+    // videos = [{ src: 'images/....mp4', poster: 'images/....webp' }]  (a tile with only a video uses its poster as the picture)
+    // (photos: [] = a plain green tile until a photo is added)
+    tagline: { en: 'Queen of the Hills', hi: 'पहाड़ों की रानी' },
+    banner: 'images/districts/shimla/banner.webp', bannerPos: 'center 62%', credit: '',
+    about: {
+      en: 'Shimla was the summer capital of British India and is now the capital of Himachal Pradesh. The Ridge and Mall Road are the heart of the town, with Christ Church standing over them, and Jakhu Hill, crowned by its Hanuman temple, is the highest point around. The old Viceregal Lodge, the colonial buildings and the Kalka–Shimla railway tell the story of the British years, while the villages around the town keep much older traditions alive.',
+      hi: 'शिमला कभी ब्रिटिश भारत की गर्मियों की राजधानी था और आज हिमाचल प्रदेश की राजधानी है। रिज और माल रोड शहर का दिल हैं, जिन पर क्राइस्ट चर्च की नज़र रहती है। जाखू की पहाड़ी, जिसके शिखर पर हनुमान मंदिर है, आसपास का सबसे ऊँचा स्थान है। पुराना वायसराय लॉज, औपनिवेशिक इमारतें और कालका–शिमला रेलवे अंग्रेज़ी दौर की कहानी कहती हैं, जबकि शहर के आसपास के गाँव कहीं पुरानी परंपराओं को ज़िंदा रखे हुए हैं।',
+    },
+    placesIntro: {
+      en: 'Mall Road is not the only place to go. Here are some local recommendations.',
+      hi: 'माल रोड ही घूमने की अकेली जगह नहीं है। यहाँ कुछ स्थानीय सुझाव हैं।',
+    },
+    places: [
+      { name: { en: 'Bantony Castle', hi: 'बैंटनी कैसल' }, kind: 'Heritage',
+        line: { en: 'A heritage castle, now an interactive museum.', hi: 'एक विरासत किला, जो अब इंटरैक्टिव संग्रहालय है।' },
+        about: { en: 'Before the castle, the estate held only a cottage. The castle was built in 1880 as the summer palace of the Maharaja of Sirmaur, in a mock-Tudor style of wood and stone, with sloping roofs and little towers. During the World Wars it housed army offices, and after Partition it was even home to The Tribune newspaper.\n\nToday it has been restored as a museum, and it is an interactive one. Digital exhibits tell the story of Shimla and Himachal, from the Kalka–Shimla railway and Mahatma Gandhi’s visits to the state’s art, and in the evening a light and sound show is projected on the castle itself.', hi: 'महल से पहले इस जागीर में सिर्फ़ एक कॉटेज थी। 1880 में सिरमौर के महाराजा के ग्रीष्मकालीन महल के रूप में यह किला बना, लकड़ी और पत्थर की टूडर शैली में, ढलवाँ छतों और छोटी मीनारों के साथ। विश्व युद्धों के दौरान यहाँ सेना के दफ़्तर रहे, और विभाजन के बाद कुछ समय द ट्रिब्यून अख़बार भी यहीं से छपा।\n\nआज इसे एक संग्रहालय के रूप में सँवारा गया है, और यह इंटरैक्टिव है। डिजिटल प्रदर्शनियाँ शिमला और हिमाचल की कहानी सुनाती हैं, कालका–शिमला रेलवे और महात्मा गांधी की यात्राओं से लेकर राज्य की कलाओं तक, और शाम को महल की दीवारों पर लाइट एंड साउंड शो चलता है।' },
+        photos: ['images/districts/shimla/bantony-castle-1.webp'], map: '' },
+      { name: { en: 'Woodstreet Cafe', hi: 'वुडस्ट्रीट कैफ़े' }, kind: 'Cafe',
+        line: { en: 'In Lakkar Bazaar, always full of IGMC medical students.', hi: 'लकड़ बाज़ार में, हमेशा IGMC के मेडिकल छात्रों से भरा।' },
+        about: { en: 'Wood Street Cafe sits in Lakkar Bazaar and is always full of medical students from IGMC, which says a lot. Locals swear by its pizza, and by its ramen and Chinese noodle bowls.', hi: 'वुड स्ट्रीट कैफ़े लकड़ बाज़ार में है और यहाँ हमेशा IGMC के मेडिकल छात्रों की भीड़ रहती है, जो अपने आप में बहुत कुछ कहता है। स्थानीय लोग इसके पिज़्ज़ा, और रेमन व चाइनीज़ नूडल बाउल के दीवाने हैं।' },
+        photos: ['images/districts/shimla/woodstreet-cafe-1.webp', 'images/districts/shimla/woodstreet-cafe-2.webp'], map: '' },
+      { name: { en: 'Cafe Sol', hi: 'कैफ़े सोल' }, kind: 'Cafe',
+        line: { en: 'Amazing ambience and home-brewed beer, at Combermere.', hi: 'शानदार माहौल और घर पर बनी बीयर, कॉम्बरमियर में।' },
+        about: { en: 'Cafe Sol is at Combermere and is loved for its amazing ambience, with glass walls, plants and the evening light. It is known for its home-brewed beer.', hi: 'कैफ़े सोल कॉम्बरमियर में है और अपने शानदार माहौल के लिए पसंद किया जाता है, जहाँ काँच की दीवारें, पौधे और शाम की रोशनी मिलती है। यह अपनी घर पर बनी बीयर के लिए जाना जाता है।' },
+        photos: ['images/districts/shimla/cafe-sol-1.webp', 'images/districts/shimla/cafe-sol-2.webp', 'images/districts/shimla/cafe-sol-3.webp', 'images/districts/shimla/cafe-sol-4.webp'], map: '' },
+      { name: { en: 'Embassy', hi: 'एम्बेसी' }, kind: 'Cafe',
+        line: { en: 'Famous for its ice cream and cakes.', hi: 'आइसक्रीम और केक के लिए मशहूर।' },
+        about: { en: 'Embassy is a Shimla favourite, famous for its ice creams and cakes, with good coffee too. Inside it is a cosy wooden room with shelves of treats, and its ice cream is the one everybody talks about.', hi: 'एम्बेसी शिमला की पसंदीदा जगहों में है, जो अपनी आइसक्रीम और केक के लिए मशहूर है, और यहाँ कॉफ़ी भी अच्छी मिलती है। अंदर लकड़ी का आरामदायक कमरा है, जहाँ मिठाइयों की अलमारियाँ सजी हैं, और यहाँ की आइसक्रीम की चर्चा हर कोई करता है।' },
+        photos: ['images/districts/shimla/embassy-1.webp', 'images/districts/shimla/embassy-2.webp', 'images/districts/shimla/embassy-3.webp', 'images/districts/shimla/embassy-4.webp', 'images/districts/shimla/embassy-5.webp'], map: '' },
+      { name: { en: 'Dorje Drak Monastery', hi: 'दोर्जे द्राक मठ' }, kind: 'Monastery',
+        line: { en: 'A Tibetan Buddhist monastery in Shimla.', hi: 'शिमला में एक तिब्बती बौद्ध मठ।' },
+        about: { en: 'Dorje Drak Monastery was founded in Shimla in 1984 by Taklung Tsetrul Rinpoche, who left Tibet after 1959 and rebuilt it in exile at Panthaghati, on the model of the original Dorje Drak in central Tibet. That mother monastery was one of the six great monasteries of the Nyingma school, the oldest school of Tibetan Buddhism, and it carries the tradition of the Northern Treasures.\n\nAround 150 monks have lived here, learning the prayers and the sacred Cham mask dances. Its painted ceilings, prayer flags and white stupa make it a calm place to stop.', hi: 'दोर्जे द्राक मठ की स्थापना 1984 में शिमला में तकलुंग त्सेत्रुल रिनपोछे ने की थी, जो 1959 के बाद तिब्बत छोड़कर आए और पंथाघाटी में मध्य तिब्बत के मूल दोर्जे द्राक की तर्ज़ पर इसे निर्वासन में फिर से बसाया। वह मूल मठ तिब्बती बौद्ध धर्म के सबसे पुराने संप्रदाय न्यिंग्मा के छह बड़े मठों में से एक था और ‘उत्तरी ख़ज़ाने’ की परंपरा को आगे बढ़ाता है।\n\nयहाँ लगभग 150 भिक्षु रहे हैं, जो प्रार्थनाएँ और पवित्र छम मुखौटा नृत्य सीखते हैं। रंगीन चित्रित छतें, प्रार्थना-पताकाएँ और सफ़ेद स्तूप इसे रुकने के लिए एक शांत जगह बनाते हैं।' },
+        photos: ['images/districts/shimla/dorje-drak-monastery-1.webp', 'images/districts/shimla/dorje-drak-monastery-2.webp', 'images/districts/shimla/dorje-drak-monastery-3.webp'], map: '' },
+      { name: { en: 'Heritage Cafe', hi: 'हेरिटेज कैफ़े' }, kind: 'Cafe',
+        line: { en: 'Try the milk cake. Good coffee and pasta too.', hi: 'मिल्क केक ज़रूर चखें। कॉफ़ी और पास्ता भी अच्छे हैं।' },
+        about: { en: 'A warm wooden café with glass cases full of cakes and bakes. Locals recommend the milk cake above all, along with good coffee and pasta.', hi: 'लकड़ी की गर्माहट वाला कैफ़े, जहाँ काँच के शोकेस केक और बेकरी से भरे रहते हैं। स्थानीय लोग सबसे पहले मिल्क केक की सलाह देते हैं, साथ में अच्छी कॉफ़ी और पास्ता भी।' },
+        photos: ['images/districts/shimla/heritage-cafe-1.webp', 'images/districts/shimla/heritage-cafe-2.webp', 'images/districts/shimla/heritage-cafe-3.webp', 'images/districts/shimla/heritage-cafe-4.webp', 'images/districts/shimla/heritage-cafe-5.webp'], map: '' },
+      { name: { en: 'Christ Church', hi: 'क्राइस्ट चर्च' }, kind: 'Church',
+        line: { en: 'Beautiful in winter, especially at Christmas and during the winter carnival.', hi: 'सर्दियों में, खासकर क्रिसमस और विंटर कार्निवल के समय, बहुत सुंदर।' },
+        about: { en: 'Christ Church stands on the Ridge and is the second oldest church in North India, after St John’s in Meerut. Colonel J. T. Boileau designed it in the neo-Gothic style. The foundation stone was laid on 9 September 1844 and the church was consecrated on 10 January 1857; the tower and clock came in the 1860s.\n\nInside, five stained-glass windows fill the church with coloured light, and Lockwood Kipling, Rudyard Kipling’s father, is said to have designed the chancel window. In winter, and especially at Christmas and the winter carnival, the church is lit in bright colours and the Ridge fills with people.', hi: 'क्राइस्ट चर्च रिज पर है और मेरठ के सेंट जॉन्स के बाद उत्तर भारत का दूसरा सबसे पुराना गिरजाघर है। इसे कर्नल जे. टी. बॉइलू ने नव-गॉथिक शैली में बनाया था। इसकी नींव का पत्थर 9 सितंबर 1844 को रखा गया और गिरजाघर 10 जनवरी 1857 को प्रतिष्ठित हुआ; मीनार और घड़ी 1860 के दशक में जुड़ीं।\n\nअंदर पाँच रंगीन काँच की खिड़कियाँ चर्च को रंगीन रोशनी से भर देती हैं, और कहा जाता है कि मुख्य वेदी की खिड़की रुडयार्ड किपलिंग के पिता लॉकवुड किपलिंग ने डिज़ाइन की थी। सर्दियों में, खासकर क्रिसमस और विंटर कार्निवल के समय, चर्च चटक रंगों में जगमगाता है और रिज पर लोगों की भीड़ उमड़ती है।' },
+        photos: ['images/districts/shimla/christ-church-1.webp', 'images/districts/shimla/christ-church-2.webp', 'images/districts/shimla/christ-church-3.webp'], map: '' },
+      { name: { en: 'Gaiety Theatre', hi: 'गेयटी थिएटर' }, kind: 'Theatre',
+        line: { en: 'For plays, performances and art exhibitions: all about the arts.', hi: 'नाटकों, प्रस्तुतियों और कला प्रदर्शनियों के लिए: सब कुछ कला के नाम।' },
+        about: { en: 'The Gaiety Theatre opened on 30 May 1887. Henry Irwin, who also designed the Viceregal Lodge, planned it as part of the town hall, a tall, multi-storey Gothic building between the Mall and the Ridge that also held a ballroom for balls and suppers, a library and offices. It became the social heart of British Shimla, home to the Amateur Dramatic Club. After years of neglect it was carefully restored, and its theatre now seats about 300.\n\nToday the Gaiety is a cultural hub for the whole town. It keeps alive the British habit of watching plays, and adds literature shows, poetry, theatre and music festivals, and much more. Its galleries show the work of local and visiting artists, including woodcraft, knitting and painting.', hi: 'गेयटी थिएटर 30 मई 1887 को खुला। वायसरीगल लॉज के वास्तुकार हेनरी इरविन ने इसे टाउन हॉल के हिस्से के रूप में बनाया था, जो माल और रिज के बीच की एक ऊँची, कई मंज़िलों वाली गॉथिक इमारत थी, जिसमें गेंद-नृत्य और भोज के लिए बॉलरूम, पुस्तकालय और दफ़्तर भी थे। यह अंग्रेज़ों के शिमला का सामाजिक केंद्र बना और एमेच्योर ड्रैमेटिक क्लब का घर रहा। बरसों की उपेक्षा के बाद इसे सँवारकर फिर से बहाल किया गया, और अब इसके थिएटर में लगभग 300 लोग बैठ सकते हैं।\n\nआज गेयटी पूरे शहर के लिए एक सांस्कृतिक केंद्र है। यह नाटक देखने की अंग्रेज़ों की आदत को ज़िंदा रखता है और उसमें साहित्य के कार्यक्रम, कविता, थिएटर और संगीत उत्सव, और भी बहुत कुछ जोड़ता है। इसकी दीर्घाओं में स्थानीय और बाहर के कलाकारों का काम दिखता है, जिनमें काष्ठकला, बुनाई और चित्रकला शामिल हैं।' },
+        photos: ['images/districts/shimla/gaiety-theatre-1.webp', 'images/districts/shimla/gaiety-theatre-2.webp', 'images/districts/shimla/gaiety-theatre-3.webp', 'images/districts/shimla/gaiety-theatre-4.webp', 'images/districts/shimla/gaiety-theatre-5.webp', 'images/districts/shimla/gaiety-theatre-6.webp'], map: '' },
+      { name: { en: 'Cafe Yummy’s', hi: 'कैफ़े यम्मीज़' }, kind: 'Cafe',
+        line: { en: 'One of the prettiest cafes, with good Chinese food.', hi: 'सबसे सुंदर कैफ़े में से एक, अच्छे चाइनीज़ खाने के साथ।' },
+        about: { en: 'In Kasumpti, a café with a blossoming pink tree in the middle of the room, said to be one of the prettiest in Shimla. The Chinese food is good too.', hi: 'कसुम्पटी में एक कैफ़े, जिसके बीचोंबीच गुलाबी फूलों वाला पेड़ है, और जिसे शिमला के सबसे सुंदर कैफ़े में गिना जाता है। यहाँ का चाइनीज़ खाना भी अच्छा है।' },
+        photos: ['images/districts/shimla/cafe-yummys-1.webp', 'images/districts/shimla/cafe-yummys-2.webp'], map: '' },
+      { name: { en: 'Shimla’s best softy', hi: 'शिमला की सबसे बढ़िया सॉफ़्टी' }, kind: 'Food',
+        line: { en: 'Next to Gainda Mal Hem Raj on the Mall.', hi: 'माल पर गैंदा मल हेमराज के बगल में।' },
+        about: { en: 'Soft-serve cones next to Gainda Mal Hem Raj on the Mall, plain or in a chocolate-and-vanilla swirl, with a wafer on top.', hi: 'माल पर गैंदा मल हेमराज के बगल में मिलने वाली सॉफ़्टी, सादी या चॉकलेट-वनीला के घुमाव में, ऊपर वेफ़र के साथ।' },
+        memory: { en: 'I call it Gainde ki ice cream. It has been my favourite since I was a little girl. Whenever I’m in Shimla and walk down the Mall, I have never once missed it, whether it’s snowing or raining. It completes my day out. Must try!', hi: 'मैं इसे “गैंदे की आइसक्रीम” कहती हूँ। यह बचपन से मेरी पसंदीदा है। अब जब भी मैं शिमला में माल पर घूमने जाती हूँ, इसे खाना कभी नहीं भूलती, चाहे बर्फ़ गिर रही हो या बारिश हो रही हो। इससे मेरा घूमने का दिन पूरा होता है। ज़रूर चखिए!' },
+        photos: ['images/districts/shimla/best-softy-1.webp'], map: '' },
+      { name: { en: 'Indian Institute of Advanced Study', hi: 'भारतीय उन्नत अध्ययन संस्थान' }, kind: 'Heritage',
+        line: { en: 'The old Viceregal Lodge on Observatory Hill, now a research institute.', hi: 'ऑब्ज़र्वेटरी हिल पर पुराना वायसरीगल लॉज, जो अब एक शोध संस्थान है।' },
+        about: { en: 'This was the Viceregal Lodge, the summer home of the Viceroys of India. Henry Irwin designed it for Lord Dufferin, building went on from 1880 to 1888, and the Viceroy moved in on 23 July 1888. It was the first building in Shimla with electric light, and its Burma-teak interiors and Scottish-castle style still impress.\n\nThe Lodge saw the last chapters of British rule. The Simla Conference on India’s political future, called by Lord Wavell, met here from 25 June to 14 July 1945, and the Congress, the Muslim League and the British met here again in May 1946. After independence it became Rashtrapati Niwas, the President’s retreat, and in 1965 President Radhakrishnan gave it to scholars as the Indian Institute of Advanced Study, a place for free and creative thought.', hi: 'यह वायसरीगल लॉज था, भारत के वायसरायों का ग्रीष्मकालीन निवास। हेनरी इरविन ने इसे लॉर्ड डफ़रिन के लिए बनाया; निर्माण 1880 से 1888 तक चला और वायसराय 23 जुलाई 1888 को यहाँ रहने आए। यह शिमला की पहली इमारत थी जहाँ बिजली की रोशनी हुई, और इसके बर्मा-सागौन के भीतरी हिस्से और स्कॉटिश किले जैसी शैली आज भी प्रभावित करती है।\n\nयह लॉज ब्रिटिश राज के आख़िरी अध्यायों का गवाह रहा। भारत के राजनीतिक भविष्य पर लॉर्ड वेवेल द्वारा बुलाया गया शिमला सम्मेलन 25 जून से 14 जुलाई 1945 तक यहीं हुआ, और मई 1946 में कांग्रेस, मुस्लिम लीग और अंग्रेज़ों की बैठक भी यहीं हुई। आज़ादी के बाद यह राष्ट्रपति निवास बना, और 1965 में राष्ट्रपति राधाकृष्णन ने इसे विद्वानों को भारतीय उच्च अध्ययन संस्थान के रूप में सौंप दिया, स्वतंत्र और रचनात्मक चिंतन की जगह के रूप में।' },
+        memory: { en: 'I specifically remember our class 3 picnic here. We carried our sheets and snacks, ran around, sat sharing food, and listened to our teachers explain what this place meant, what had happened here, and how this building stands for the independence of India.', hi: 'मुझे तीसरी कक्षा का हमारा पिकनिक ख़ासतौर पर याद है। हम अपनी चादरें और नाश्ता लेकर आए थे, इधर-उधर दौड़े-भागे, साथ बैठकर खाना बाँटा, और अपने शिक्षकों से सुना कि इस जगह का क्या मतलब है, यहाँ क्या-क्या हुआ था, और यह इमारत भारत की आज़ादी की निशानी कैसे है।' },
+        photos: ['images/districts/shimla/iias-1.webp', 'images/districts/shimla/iias-2.webp', 'images/districts/shimla/iias-3.webp', 'images/districts/shimla/iias-4.webp', 'images/districts/shimla/iias-5.webp', 'images/districts/shimla/iias-6.webp', 'images/districts/shimla/iias-7.webp'], map: '' },
+      { name: { en: 'Cafe Khoblu', hi: 'कैफ़े खोब्लू' }, kind: 'Cafe',
+        line: { en: 'Traditional Himachali food, sizzling brownies, pet friendly.', hi: 'पारंपरिक हिमाचली खाना, सिज़लिंग ब्राउनी, पालतू जानवरों का स्वागत।' },
+        about: { en: 'In Sanjauli. You can eat traditional Himachali food here, and locals say the sizzling brownies are the best, a must-try. The cafe is pet friendly too.', hi: 'संजौली में। यहाँ पारंपरिक हिमाचली खाना मिलता है, और स्थानीय लोग कहते हैं कि सिज़लिंग ब्राउनी सबसे बढ़िया है, ज़रूर चखें। कैफ़े में पालतू जानवरों का भी स्वागत है।' },
+        photos: ['images/districts/shimla/cafe-khoblu-1.webp', 'images/districts/shimla/cafe-khoblu-2.webp', 'images/districts/shimla/cafe-khoblu-3.webp', 'images/districts/shimla/cafe-khoblu-4.webp', 'images/districts/shimla/cafe-khoblu-5.webp', 'images/districts/shimla/cafe-khoblu-6.webp'], map: '' },
+      { name: { en: 'Clarkes Hotel', hi: 'क्लार्क्स होटल' }, kind: 'Heritage',
+        line: { en: 'A grand heritage hotel on the Mall, open since 1898.', hi: 'माल पर 1898 से खड़ा एक शानदार विरासती होटल।' },
+        about: { en: 'Clarkes Hotel dates from 1898 and is one of the oldest hotels in Shimla. It stands on the Mall, a short walk from the Gaiety Theatre, Christ Church and the old colonial buildings, and it still feels like a home from the days of the Raj. It has 32 rooms, a dining hall, a terrace and a lounge bar.', hi: 'क्लार्क्स होटल 1898 का है और शिमला के सबसे पुराने होटलों में गिना जाता है। यह माल पर है, गेयटी थिएटर, क्राइस्ट चर्च और पुरानी औपनिवेशिक इमारतों से थोड़ी ही दूर, और आज भी राज के दिनों के किसी घर जैसा लगता है। इसमें 32 कमरे, एक डाइनिंग हॉल, एक छत और एक लाउंज बार है।' },
+        photos: ['images/districts/shimla/clarkes-hotel-1.webp'], map: '' },
+      { name: { en: 'Railway Board Building', hi: 'रेलवे बोर्ड बिल्डिंग' }, kind: 'Heritage',
+        line: { en: 'A red-and-cream landmark on the Mall, built of iron and steel in 1896–97.', hi: 'माल पर लाल-क्रीम रंग की पहचान, जो 1896–97 में लोहे और इस्पात से बनी।' },
+        about: { en: 'The old Railway Board Building was built in 1896–97 by Richardson & Cruddas, entirely of cast iron and steel, in the days when Shimla was the summer capital of British India. Its red-and-cream walls and corner spires stand out on the Mall, in front of Gorton Castle. Its fire-resistant iron frame is a big reason it has lasted so well, in a town where wooden buildings so often burned.\n\nFour storeys high, with its long rows of arched windows, it is one of the finest colonial buildings in Shimla, and it still houses government offices.', hi: 'पुरानी रेलवे बोर्ड बिल्डिंग 1896–97 में रिचर्डसन एंड क्रडास ने पूरी तरह ढलवाँ लोहे और इस्पात से बनाई थी, उन दिनों जब शिमला ब्रिटिश भारत की गर्मियों की राजधानी था। इसकी लाल-क्रीम दीवारें और कोनों की मीनारें माल पर गॉर्टन कैसल के सामने अलग ही दिखती हैं। इसका आग से बचाने वाला लोहे का ढाँचा ही बड़ी वजह है कि यह इतने बरस टिकी रही, उस शहर में जहाँ लकड़ी की इमारतें अक्सर जल जाती थीं।\n\nचार मंज़िला और मेहराबदार खिड़कियों की लंबी क़तारों वाली यह शिमला की सबसे सुंदर औपनिवेशिक इमारतों में से एक है, और आज भी इसमें सरकारी दफ़्तर हैं।' },
+        photos: ['images/districts/shimla/railway-board-building-1.webp'], map: '' },
+      { name: { en: 'St Michael’s Cathedral', hi: 'सेंट माइकल कैथेड्रल' }, kind: 'Church',
+        line: { en: 'The first Roman Catholic church in Shimla, built in grey stone.', hi: 'शिमला का पहला रोमन कैथोलिक गिरजाघर, स्लेटी पत्थर से बना।' },
+        about: { en: 'St Michael’s Cathedral, officially the Cathedral of St Michael and St Joseph, was built in dressed grey stone in the mid-1880s, in Ripon Place just off the Mall. The site was chosen by Lord Ripon, a Roman Catholic, when he was Viceroy, and it was the first Roman Catholic church in Shimla. It is usually credited to the architect Henry Irwin, who also designed the Viceregal Lodge and the Gaiety Theatre.\n\nInside it is plain and calm, with a wide nave and two aisles and a stained-glass window over the altar, and it can hold about 400 people. It is the cathedral of the Diocese of Simla and Chandigarh. At Christmas the entrance is lit and decorated, as in this photo.', hi: 'सेंट माइकल कैथेड्रल, जिसका औपचारिक नाम सेंट माइकल और सेंट जोसेफ़ का कैथेड्रल है, 1880 के दशक के बीच में माल के पास रिपन प्लेस में तराशे हुए स्लेटी पत्थर से बना था। इसकी जगह तब के वायसराय लॉर्ड रिपन ने चुनी थी, जो रोमन कैथोलिक थे, और यह शिमला का पहला रोमन कैथोलिक गिरजाघर था। आम तौर पर इसका श्रेय वास्तुकार हेनरी इरविन को दिया जाता है, जिन्होंने वायसरीगल लॉज और गेयटी थिएटर भी बनाए।\n\nअंदर से यह सादा और शांत है, चौड़े मध्य-कक्ष और दो गलियारों के साथ, वेदी के ऊपर रंगीन काँच की खिड़की, और इसमें लगभग 400 लोग आ सकते हैं। यह शिमला और चंडीगढ़ धर्मप्रांत का कैथेड्रल है। क्रिसमस पर इसका प्रवेश-द्वार रोशनी और सजावट से जगमगाता है, जैसा इस तस्वीर में दिखता है।' },
+        photos: ['images/districts/shimla/st-michaels-cathedral-1.webp'], map: '' },
+    ],
+    extraSections: [
+      { eyebrow: { en: 'Beyond Shimla city', hi: 'शिमला शहर से आगे' },
+        intro: { en: 'Drives into the apple country and the Pabbar valley.', hi: 'सेब के इलाक़े और पब्बर घाटी की ओर सैर।' },
+        places: [
+          { name: { en: 'Jubbal Palace', hi: 'जुब्बल पैलेस' }, kind: 'Heritage',
+            line: { en: 'The palace of a former princely state, about 90 km from Shimla.', hi: 'एक पूर्व रियासत का महल, शिमला से लगभग 90 किलोमीटर दूर।' },
+            about: { en: 'Jubbal is a former princely state about 90 to 100 km from Shimla. It was ruled by a Rathore family who took the title of Rana, and its palace, said to have been designed by a French architect in the 1930s, blends Chinese, Indian and European styles. The part known as the Rana’s abode is carved in deodar timber, with hanging attics.\n\nThe town itself is a quiet one, with old wooden houses, deodar forests on the way in, and valley views all around, in the heart of Himachal’s apple country.', hi: 'जुब्बल शिमला से लगभग 90 से 100 किलोमीटर दूर एक पूर्व रियासत है। यहाँ राठौर परिवार का शासन था, जो ‘राणा’ की उपाधि रखता था, और 1930 के दशक में बना इसका महल, जिसे एक फ़्रांसीसी वास्तुकार का बनाया बताया जाता है, चीनी, भारतीय और यूरोपीय शैलियों का मेल है। ‘राणा का निवास’ कहलाने वाला हिस्सा देवदार की लकड़ी में तराशा गया है, लटकती अटारियों के साथ।\n\nकस्बा खुद शांत है, पुराने लकड़ी के घरों, रास्ते के देवदार जंगलों और चारों ओर घाटी के नज़ारों के साथ, हिमाचल के सेब के इलाक़े के बीचोंबीच।' },
+            photos: ['images/districts/shimla/jubbal-palace-1.webp', 'images/districts/shimla/jubbal-palace-2.webp', 'images/districts/shimla/jubbal-palace-3.webp', 'images/districts/shimla/jubbal-palace-4.webp', 'images/districts/shimla/jubbal-palace-5.webp'], map: '' },
+          { name: { en: 'Apple orchards of Jubbal', hi: 'जुब्बल के सेब के बाग़' }, kind: 'Nature',
+            line: { en: 'Orchards under hail nets, valley views and bee boxes among the trees.', hi: 'ओलों की जाली से ढके बाग़, घाटी के नज़ारे और पेड़ों के बीच मधुमक्खी के डिब्बे।' },
+            about: { en: 'The slopes around Jubbal are covered in apple orchards, part of the apple belt that runs through Kotkhai and Rohru. The trees bloom white and pink in April, and the apples ripen from September to November. Many orchards are covered in white nets that protect the fruit from hail.\n\nIt is a lovely place for a slow day: valley views from the roadside, walks between the trees, and boxes of bees placed among the orchards, where honey is extracted.', hi: 'जुब्बल के आसपास की ढलानें सेब के बाग़ों से ढकी हैं, उसी सेब पट्टी का हिस्सा जो कोटखाई और रोहड़ू से होकर जाती है। पेड़ अप्रैल में सफ़ेद-गुलाबी फूलों से भर जाते हैं और सेब सितंबर से नवंबर तक पकते हैं। कई बाग़ सफ़ेद जालियों से ढके होते हैं, जो फल को ओलों से बचाती हैं।\n\nआराम से एक दिन बिताने की यह सुंदर जगह है: सड़क किनारे से घाटी के नज़ारे, पेड़ों के बीच सैर, और बाग़ों में रखे मधुमक्खियों के डिब्बे, जहाँ से शहद निकाला जाता है।' },
+            photos: ['images/districts/shimla/jubbal-orchards-1.webp', 'images/districts/shimla/jubbal-orchards-2.webp', 'images/districts/shimla/jubbal-orchards-3.webp', 'images/districts/shimla/jubbal-orchards-4.webp', 'images/districts/shimla/jubbal-orchards-5.webp'], map: '' },
+          { name: { en: 'Hatkoti Temple', hi: 'हाटकोटी मंदिर' }, kind: 'Temple',
+            line: { en: 'An ancient Shakti temple on the Pabbar river, linked to the Pandavas.', hi: 'पब्बर नदी किनारे एक प्राचीन शक्ति मंदिर, जिसका संबंध पांडवों से जोड़ा जाता है।' },
+            about: { en: 'Hatkoti is a village on the Pabbar river, about 100 km from Shimla, where two small streams join the river. Here stands the ancient temple of Hateshwari Mata, the goddess Durga as Mahishasuramardini, slayer of the buffalo demon, with an idol cast in eight metals. A separate Shiva temple stands beside it.\n\nLocal tradition says the Pandava brothers spent part of their exile here and built the shrines. Five small stone temples in a row are still worshipped as the Pandavas’ temples. Historians date the temple complex to about the 8th or 9th century.', hi: 'हाटकोटी पब्बर नदी के किनारे बसा गाँव है, शिमला से लगभग 100 किलोमीटर दूर, जहाँ दो छोटी धाराएँ नदी से मिलती हैं। यहाँ हाटेश्वरी माता का प्राचीन मंदिर है, जहाँ देवी दुर्गा महिषासुरमर्दिनी के रूप में विराजमान हैं, आठ धातुओं से बनी मूर्ति के साथ। उसी के पास शिव का अलग मंदिर है।\n\nस्थानीय मान्यता है कि पांडवों ने अपने वनवास का कुछ समय यहाँ बिताया और ये मंदिर बनाए। कतार में खड़े पाँच छोटे पत्थर के मंदिर आज भी पांडवों के मंदिर के रूप में पूजे जाते हैं। इतिहासकार इस मंदिर समूह को लगभग आठवीं-नौवीं सदी का मानते हैं।' },
+            photos: ['images/districts/shimla/hatkoti-temple-1.webp', 'images/districts/shimla/hatkoti-temple-2.webp'], map: '' },
+          { name: { en: 'Pabbar Valley', hi: 'पब्बर घाटी' }, kind: 'Nature',
+            line: { en: 'The Pabbar river, its lake and the Sawra Kuddu dam.', hi: 'पब्बर नदी, उसकी झील और सावरा कुड्डू बाँध।' },
+            about: { en: 'The Pabbar river runs down the valley past Hatkoti, and the Sawra Kuddu dam holds its water in a calm lake. A quiet stop for river and mountain views on the way to or from the temple.', hi: 'पब्बर नदी हाटकोटी के पास से घाटी में बहती है, और सावरा कुड्डू बाँध उसके पानी को एक शांत झील में थामे रखता है। मंदिर जाते या लौटते समय नदी और पहाड़ों के नज़ारों के लिए एक शांत पड़ाव।' },
+            photos: ['images/districts/shimla/pabbar-valley-1.webp', 'images/districts/shimla/pabbar-valley-2.webp', 'images/districts/shimla/pabbar-valley-3.webp', 'images/districts/shimla/pabbar-valley-4.webp', 'images/districts/shimla/pabbar-valley-5.webp', 'images/districts/shimla/pabbar-valley-6.webp'], map: '' },
+          { name: { en: 'Kufri', hi: 'कुफ़री' }, kind: 'Nature',
+            line: { en: 'A short drive from Shimla: snow in winter, and yaks to meet.', hi: 'शिमला से थोड़ी ही दूर: सर्दियों में बर्फ़, और मिलने को याक।' },
+            about: { en: 'A hill town a short drive from Shimla, loved for its snow in winter and for the yaks that rest by the roadside, waiting for visitors to pose with them.', hi: 'शिमला से थोड़ी ही दूर एक पहाड़ी क़स्बा, जो सर्दियों की बर्फ़ के लिए और सड़क किनारे आराम करते उन याक के लिए पसंद किया जाता है, जो आने वालों के साथ तस्वीरें खिंचवाने का इंतज़ार करते हैं।' },
+            photos: ['images/districts/shimla/kufri-1.webp'], map: '' },
+          { name: { en: 'Tara Devi Temple', hi: 'तारा देवी मंदिर' }, kind: 'Temple',
+            line: { en: 'A hilltop temple of Goddess Tara, a short drive from Shimla.', hi: 'देवी तारा का पहाड़ी मंदिर, शिमला से थोड़ी ही दूर।' },
+            about: { en: 'Tara Devi is a hilltop temple dedicated to Goddess Tara, a short drive from Shimla. The wooden temple, with its carved, tiered roof, stands on a stone platform with wide views over the hills. The little Kalka–Shimla train stops at a station named after it.', hi: 'तारा देवी देवी तारा को समर्पित एक पहाड़ी मंदिर है, शिमला से थोड़ी ही दूर। लकड़ी का यह मंदिर, अपनी नक्काशीदार, सीढ़ीनुमा छत के साथ, पत्थर के चबूतरे पर खड़ा है, जहाँ से पहाड़ियों का दूर तक नज़ारा दिखता है। कालका–शिमला की छोटी रेलगाड़ी इसके नाम पर बने एक स्टेशन पर रुकती है।' },
+            photos: ['images/districts/shimla/tara-devi-temple-1.webp', 'images/districts/shimla/tara-devi-temple-2.webp'], map: '' },
+        ] },
+    ],
+    galleryTitle: { en: 'Shimla in pictures', hi: 'तस्वीरों में शिमला' },
+    gallery: [
+      { photo: 'images/districts/shimla/pictures-1.webp', caption: { en: 'Scandal Point', hi: 'स्कैंडल पॉइंट' } },
+      { photo: 'images/districts/shimla/pictures-2.webp', caption: { en: 'Shimla in winter', hi: 'सर्दियों में शिमला' } },
+      { photo: 'images/districts/shimla/pictures-3.webp', caption: { en: 'Shimla', hi: 'शिमला' } },
+      { photo: 'images/districts/shimla/pictures-4.webp', caption: { en: 'Shimla at dusk', hi: 'शाम ढलते शिमला' } },
+      { photo: 'images/districts/shimla/pictures-5.webp', caption: { en: 'Shimla', hi: 'शिमला' } },
+      { photo: 'images/districts/shimla/pictures-6.webp', caption: { en: 'The Mall in the rain', hi: 'बारिश में माल' } },
+      { photo: 'images/districts/shimla/pictures-7.webp', caption: { en: 'Shimla at Christmas', hi: 'क्रिसमस पर शिमला' } },
+      { photo: 'images/districts/shimla/pictures-8.webp', caption: { en: 'Winter nights', hi: 'सर्दियों की रातें' } },
+      { photo: 'images/districts/shimla/pictures-9.webp', caption: { en: 'Shimla at sunset', hi: 'सूरज ढलते शिमला' } },
+    ],
+  },
+
+  mandi: {
+    tagline: { en: 'Chhoti Kashi of the hills', hi: 'पहाड़ों की छोटी काशी' },
+    banner: 'images/districts/mandi/banner.webp', bannerPos: 'center 50%', credit: '',
+    about: {
+      en: 'Mandi, on the banks of the Beas, is called Chhoti Kashi for its many old stone temples, among them Bhootnath, Triloknath and Panchvaktra. Every year the International Shivratri Fair gathers the deities of the district in the town for a week. Rewalsar Lake, sacred to Hindus, Buddhists and Sikhs, and Prashar Lake with its pagoda-style temple are favourite journeys, and Mandyali is the language of the hills around.',
+      hi: 'ब्यास किनारे बसी मंडी को अपने कई पुराने पत्थर के मंदिरों के कारण छोटी काशी कहा जाता है, जिनमें भूतनाथ, त्रिलोकनाथ और पंचवक्त्र प्रमुख हैं। हर साल अंतरराष्ट्रीय शिवरात्रि मेले में ज़िले के देवी-देवता एक हफ़्ते के लिए शहर में जुटते हैं। हिंदुओं, बौद्धों और सिखों के लिए पवित्र रिवालसर झील और पैगोडा शैली के मंदिर वाली पराशर झील लोगों की पसंदीदा यात्राएँ हैं, और आसपास की पहाड़ियों की बोली मंडयाली है।',
+    },
+    placesIntro: {
+      en: 'Lakes, hot springs and sacred places around Mandi.',
+      hi: 'मंडी के आसपास की झीलें, गर्म चश्मे और पवित्र स्थान।',
+    },
+    places: [
+      { name: { en: 'Sundernagar', hi: 'सुंदरनगर' }, kind: 'Town',
+        line: { en: 'Named for its beauty (“sundar” means beautiful) and known for its lake. Once known as Suket, the seat of an old hill state.', hi: 'अपनी सुंदरता (“सुंदर”) के नाम पर बसा और अपनी झील के लिए जाना जाता है। कभी सुकेत कहलाता था, जो एक पुराने पहाड़ी राज्य की राजधानी थी।' },
+        photos: [], map: '' },
+      { name: { en: 'Rewalsar Lake', hi: 'रिवालसर झील' }, kind: 'Lake',
+        line: { en: 'A lake sacred to Hindus, Buddhists and Sikhs, with a temple, Tibetan monasteries and a gurdwara on its shores.', hi: 'हिंदुओं, बौद्धों और सिखों के लिए पवित्र झील, जिसके किनारे मंदिर, तिब्बती मठ और गुरुद्वारा हैं।' },
+        about: { en: 'Tibetan Buddhists call Rewalsar Tso Pema, the Lotus Lake, and revere it as the place linked with Guru Padmasambhava, also called Guru Rinpoche, who left from here to take Vajrayana Buddhism to Tibet. A Buddhist legend says the lake appeared when a funeral pyre built for him turned into water, and the lake once had floating reed islands that were seen as symbols of him.\n\nHindus link the lake to the sage Lomas, who did penance here, and there are temples to Lomas Rishi, Shiva and Krishna on its shore. For Sikhs, Guru Gobind Singh stayed here for about a month to seek the hill kings’ support against Aurangzeb, and a gurdwara was built in 1930 to remember his visit. A 12-metre statue of Padmasambhava watches over the town. That one lake is sacred to three faiths is what makes Rewalsar so important.', hi: 'तिब्बती बौद्ध रिवालसर को त्सो पेमा, यानी कमल झील, कहते हैं और इसे गुरु पद्मसंभव (गुरु रिनपोछे) से जुड़ा स्थान मानते हैं, जो यहीं से वज्रयान बौद्ध धर्म को तिब्बत ले गए। बौद्ध कथा है कि उनके लिए बनाई गई चिता झील में बदल गई, और झील में कभी तैरते सरकंडा-द्वीप थे, जिन्हें उनका प्रतीक माना जाता था।\n\nहिंदू इस झील को ऋषि लोमस से जोड़ते हैं, जिन्होंने यहाँ तपस्या की, और किनारे पर लोमस ऋषि, शिव और कृष्ण के मंदिर हैं। सिखों के लिए गुरु गोबिंद सिंह जी औरंगज़ेब के विरुद्ध पहाड़ी राजाओं का साथ जुटाने के लिए यहाँ लगभग एक महीना ठहरे थे, और उनकी यात्रा की याद में 1930 में गुरुद्वारा बना। पद्मसंभव की 12 मीटर ऊँची प्रतिमा शहर पर नज़र रखती है। एक ही झील का तीन धर्मों के लिए पवित्र होना ही रिवालसर को इतना ख़ास बनाता है।' },
+        photos: ['images/districts/mandi/rewalsar-lake-1.webp', 'images/districts/mandi/rewalsar-lake-2.webp'], map: '' },
+      { name: { en: 'Zigar Drukpa Kargyud Monastery', hi: 'ज़िगर द्रुकपा काग्यू मठ' }, kind: 'Monastery',
+        line: { en: 'A Drukpa Kagyu monastery near Rewalsar Lake, built in the 1980s.', hi: 'रिवालसर झील के पास एक द्रुकपा काग्यू मठ, जो 1980 के दशक में बना।' },
+        about: { en: 'A Drukpa Kagyu monastery near Rewalsar Lake, behind the old Nyingma gompa, built in the 1980s. The Drukpa Kagyu school is one of the main schools of Tibetan Buddhism, and the present head of the lineage, the Gyalwang Drukpa, was born in Rewalsar in 1963.\n\nRewalsar, the Lotus Lake, is a sacred place for Tibetan Buddhists, and its monasteries, with their painted halls and prayer flags, show how this small town became a place of pilgrimage.', hi: 'रिवालसर झील के पास, पुराने न्यिंग्मा गोम्पा के पीछे, 1980 के दशक में बना एक द्रुकपा काग्यू मठ। द्रुकपा काग्यू तिब्बती बौद्ध धर्म के प्रमुख संप्रदायों में से एक है, और इस परंपरा के वर्तमान प्रमुख, ग्यालवांग द्रुकपा, का जन्म 1963 में रिवालसर में हुआ था।\n\nकमल झील रिवालसर तिब्बती बौद्धों के लिए पवित्र स्थान है, और इसके मठ, अपने चित्रित सभागारों और प्रार्थना-पताकाओं के साथ, दिखाते हैं कि यह छोटा-सा शहर कैसे तीर्थ बन गया।' },
+        photos: ['images/districts/mandi/zigar-monastery-1.webp', 'images/districts/mandi/zigar-monastery-2.webp', 'images/districts/mandi/zigar-monastery-3.webp', 'images/districts/mandi/zigar-monastery-4.webp', 'images/districts/mandi/zigar-monastery-5.webp', 'images/districts/mandi/zigar-monastery-6.webp'], map: '' },
+      { name: { en: 'Prashar Lake', hi: 'पराशर झील' }, kind: 'Lake',
+        line: { en: 'A mountain lake at 2,730 metres, with a pagoda-style temple to sage Prashar and a small island that floats and drifts across the water.', hi: '2,730 मीटर की ऊँचाई पर पहाड़ी झील, जिसके किनारे ऋषि पराशर का पैगोडा शैली का मंदिर है, और एक छोटा द्वीप जो पानी पर तैरता और सरकता रहता है।' },
+        photos: [], map: '' },
+      { name: { en: 'Tattapani', hi: 'तत्तापानी' }, kind: 'Hot springs',
+        line: { en: 'Sulphur-rich hot springs on the banks of the Sutlej, about 52 km from Shimla. The name means “hot water”.', hi: 'सतलुज किनारे गंधक वाले गर्म चश्मे, शिमला से लगभग 52 किलोमीटर दूर। तत्तापानी का मतलब है गर्म पानी।' },
+        about: { en: 'A village on the banks of the Sutlej river, known for its sulphur-rich hot springs, its pretty views and its clear skies. Tatta pani means hot water.', hi: 'सतलुज नदी के किनारे बसा गाँव, जो अपने गंधक वाले गर्म चश्मों, सुंदर नज़ारों और साफ़ आसमान के लिए जाना जाता है। तत्ता पानी का मतलब है गर्म पानी।' },
+        memory: { en: 'Tattapani is special to me because it is my grandma’s home. Going there with my dad makes me feel closer to her, and I am always elated. The skies are clearer and I can just keep looking at the constellations. I go on long walks around the village and listen to the stories my daadi tells. Time passes differently here, the days seem longer and slower, and life feels content for a while. I want to leave the life I have in the city, move here and just be.', hi: 'तत्तापानी मेरे लिए ख़ास है क्योंकि यह मेरी नानी-दादी का घर है। पापा के साथ यहाँ आकर मैं उनके और क़रीब महसूस करती हूँ, और हमेशा खिल उठती हूँ। यहाँ आसमान ज़्यादा साफ़ है और मैं बस तारामंडल को निहारती रह सकती हूँ। मैं गाँव के चारों ओर लंबी सैर पर निकलती हूँ और दादी की सुनाई कहानियाँ सुनती हूँ। यहाँ वक़्त अलग तरह से बीतता है, दिन लंबे और धीमे लगते हैं, और ज़िंदगी कुछ देर के लिए सुकून से भर जाती है। मन करता है शहर की अपनी ज़िंदगी छोड़कर यहीं आ बसूँ और बस जी लूँ।' },
+        photos: ['images/districts/mandi/tattapani-1.webp', 'images/districts/mandi/tattapani-2.webp', 'images/districts/mandi/tattapani-3.webp', 'images/districts/mandi/tattapani-4.webp', 'images/districts/mandi/tattapani-5.webp', 'images/districts/mandi/tattapani-6.webp', 'images/districts/mandi/tattapani-7.webp', 'images/districts/mandi/tattapani-8.webp', 'images/districts/mandi/tattapani-9.webp'], map: '' },
+    ],
+  },
+
+  kullu: {
+    tagline: { en: 'Valley of the Gods', hi: 'देवताओं की घाटी' },
+    banner: 'images/districts/kullu/banner.webp', bannerPos: 'center 50%', credit: '',
+    about: {
+      en: 'Kullu is known as the Valley of the Gods. Its Dussehra begins on the day Dussehra ends elsewhere, and brings village deities from across the valley to the Dhalpur ground in their palanquins. The Beas runs through orchards and old villages, past Naggar’s castle and the hot springs of Manikaran, and Kullu shawls and the Kullvi cap are known all over India. Manali and the Great Himalayan National Park are in this district too.',
+      hi: 'कुल्लू को देवताओं की घाटी कहा जाता है। यहाँ का दशहरा उस दिन शुरू होता है जब बाकी जगह दशहरा खत्म होता है, और घाटी भर के गाँवों के देवता पालकियों में सजकर ढालपुर मैदान पहुँचते हैं। ब्यास बागों और पुराने गाँवों के बीच से, नग्गर के किले और मणिकर्ण के गर्म चश्मों के पास से बहती है, और कुल्लू की शॉल व कुल्लवी टोपी पूरे देश में जानी जाती हैं। मनाली और ग्रेट हिमालयन नेशनल पार्क भी इसी ज़िले में हैं।',
+    },
+    placesIntro: {
+      en: 'Rivers, cedar forests, cafés and the road to the high mountains.',
+      hi: 'नदियाँ, देवदार के जंगल, कैफ़े और ऊँचे पहाड़ों की ओर जाती सड़क।',
+    },
+    places: [
+      { name: { en: 'Manali', hi: 'मनाली' }, kind: 'Valley',
+        line: { en: 'The Beas river, cedar forests and mountain views.', hi: 'ब्यास नदी, देवदार के जंगल और पहाड़ों के नज़ारे।' },
+        about: { en: 'Manali sits in the upper Kullu valley on the Beas river, in a bowl of deodar forest and mountains. The road along the river, the night lights of the town and the cedar forests around the old temples make it one of Himachal’s best-loved places. It is also where the road north begins, to the Atal Tunnel, Lahaul and Ladakh.', hi: 'मनाली ऊपरी कुल्लू घाटी में ब्यास नदी के किनारे, देवदार के जंगल और पहाड़ों के कटोरे में बसा है। नदी के साथ चलती सड़क, शहर की रात की रोशनियाँ और पुराने मंदिरों के आसपास के देवदार के जंगल इसे हिमाचल की सबसे प्यारी जगहों में से एक बनाते हैं। यहीं से उत्तर की सड़क शुरू होती है, अटल टनल, लाहौल और लद्दाख की ओर।' },
+        photos: ['images/districts/kullu/manali-1.webp', 'images/districts/kullu/manali-2.webp', 'images/districts/kullu/manali-3.webp', 'images/districts/kullu/manali-4.webp'], map: '' },
+      { name: { en: 'Hidimba Devi Temple', hi: 'हिडिंबा देवी मंदिर' }, kind: 'Temple',
+        line: { en: 'A wooden pagoda temple in a cedar forest.', hi: 'देवदार के जंगल में लकड़ी का पैगोडा शैली का मंदिर।' },
+        about: { en: 'The Hidimba Devi Temple, known locally as the Dhungri temple, stands in a cedar forest in Manali. It is dedicated to Hidimba, the wife of Bhima and mother of Ghatotkacha in the Mahabharata, and tradition says it is built around the cave where she meditated. It was built in 1553 by Maharaja Bahadur Singh of Kullu.\n\nThe temple is one of the few in India built in the pagoda style, with a tiered wooden roof, carved doors and walls, and bells, brass cones and horns hanging from its eaves. Inside there is no idol, but a great rock, with only a small brass image of the goddess. Hidimba is revered as a deity in Manali, and the cedar forest around her temple is as much a part of the visit as the temple itself.', hi: 'हिडिंबा देवी मंदिर, जिसे स्थानीय लोग ढुंगरी मंदिर कहते हैं, मनाली में देवदार के जंगल के बीच है। यह हिडिंबा को समर्पित है, जो महाभारत में भीम की पत्नी और घटोत्कच की माँ थीं, और मान्यता है कि मंदिर उस गुफा के चारों ओर बना है जहाँ उन्होंने तपस्या की थी। इसे 1553 में कुल्लू के महाराजा बहादुर सिंह ने बनवाया था।\n\nयह मंदिर भारत के उन गिने-चुने मंदिरों में है जो पैगोडा शैली में बने हैं, सीढ़ीनुमा लकड़ी की छत, नक्काशीदार दरवाज़ों और दीवारों के साथ, और छज्जों से लटकती घंटियों, पीतल के शंकुओं और सींगों के साथ। भीतर कोई मूर्ति नहीं, बल्कि एक विशाल चट्टान है, जिस पर देवी की सिर्फ़ एक छोटी पीतल की मूर्ति है। हिडिंबा मनाली में देवी के रूप में पूजी जाती हैं, और उनके मंदिर के आसपास का देवदार का जंगल यात्रा का उतना ही हिस्सा है जितना मंदिर।' },
+        photos: ['images/districts/kullu/hidimba-temple-1.webp', 'images/districts/kullu/hidimba-temple-2.webp'], map: '' },
+      { name: { en: 'Mad King’s House & Cafe', hi: 'मैड किंग्स हाउस एंड कैफ़े' }, kind: 'Cafe',
+        line: { en: 'Best thukpa in Manali.', hi: 'मनाली का सबसे बढ़िया थुक्पा।' },
+        about: { en: 'The Mad King’s House & Cafe in Manali is known for the best thukpa, a steaming Tibetan noodle soup, and its quirky decor includes a skeleton in a Santa hat. A good place to warm up after a day in the cold.', hi: 'मनाली का मैड किंग्स हाउस एंड कैफ़े सबसे बढ़िया थुक्पा के लिए जाना जाता है, यानी भाप उड़ाता तिब्बती नूडल सूप, और इसकी अनोखी सजावट में सांता टोपी पहने एक कंकाल भी है। दिन भर ठंड में रहने के बाद गर्माहट पाने की अच्छी जगह।' },
+        photos: ['images/districts/kullu/mad-kings-cafe-1.webp', 'images/districts/kullu/mad-kings-cafe-2.webp', 'images/districts/kullu/mad-kings-cafe-3.webp'], map: '' },
+      { name: { en: 'The road to the Atal Tunnel', hi: 'अटल टनल की सड़क' }, kind: 'Drive',
+        line: { en: 'The snowy road north from Manali.', hi: 'मनाली से उत्तर की बर्फ़ीली सड़क।' },
+        about: { en: 'North of Manali the road climbs through snow towards the Atal Tunnel, which runs for 9.02 km beneath the Rohtang Pass. It opened in October 2020, at about 3,100 metres, and it is the longest highway tunnel in the world above 10,000 feet.\n\nBefore it, the road to Lahaul was cut off by snow for about six months a year. The tunnel keeps Manali connected to Lahaul and the road to Ladakh open through the winter, and it saves hours on the journey.', hi: 'मनाली के उत्तर में सड़क बर्फ़ के बीच अटल टनल की ओर चढ़ती है, जो रोहतांग दर्रे के नीचे 9.02 किलोमीटर लंबी है। यह अक्तूबर 2020 में खुली, लगभग 3,100 मीटर की ऊँचाई पर, और यह 10,000 फ़ीट से ऊपर दुनिया की सबसे लंबी राजमार्ग सुरंग है।\n\nइससे पहले लाहौल की सड़क साल में लगभग छह महीने बर्फ़ से कटी रहती थी। यह सुरंग मनाली को लाहौल से जोड़े रखती है और लद्दाख की सड़क को सर्दियों भर खुला रखती है, और सफ़र के घंटे बचाती है।' },
+        photos: ['images/districts/kullu/atal-tunnel-road-1.webp', 'images/districts/kullu/atal-tunnel-road-2.webp', 'images/districts/kullu/atal-tunnel-road-3.webp'], map: '' },
+      { name: { en: 'Backyard', hi: 'बैकयार्ड' }, kind: 'Cafe',
+        line: { en: 'A café with a willow terrace and a cosy lounge.', hi: 'बेंत की छाया वाली छत और आरामदायक लाउंज वाला कैफ़े।' },
+        about: { en: 'A café in Manali with a terrace under weeping willows hung with prayer flags, and a cosy wooden lounge with guitars and framed photos on the walls.', hi: 'मनाली में एक कैफ़े, जिसकी छत पर प्रार्थना-पताकाओं से सजे झुके हुए बेंत के पेड़ों की छाया है, और अंदर लकड़ी का आरामदायक लाउंज, जिसकी दीवारों पर गिटार और फ़्रेम की हुई तस्वीरें हैं।' },
+        photos: ['images/districts/kullu/backyard-1.webp', 'images/districts/kullu/backyard-2.webp', 'images/districts/kullu/backyard-3.webp', 'images/districts/kullu/backyard-4.webp'], map: '' },
+    ],
+  },
+
+  kangra: {
+    tagline: { en: 'Under the Dhauladhar', hi: 'धौलाधार की गोद में' },
+    banner: 'images/districts/kangra/banner.webp', bannerPos: 'center 40%', credit: '',
+    about: {
+      en: 'The Kangra Valley lies under the white wall of the Dhauladhar range. Kangra Fort is one of the oldest forts in India, and the Brajeshwari Devi temple is a famous Shakti Peeth. Dharamshala and McLeod Ganj are home to the Dalai Lama and a large Tibetan community. Palampur’s tea gardens, the old Shiva temple at Baijnath, the rock-cut temples of Masroor and the Kangra miniature paintings add to the valley’s long history, and a Kangri Dham is one of Himachal’s best-loved feasts.',
+      hi: 'कांगड़ा घाटी धौलाधार की सफ़ेद दीवार के नीचे बसी है। कांगड़ा किला देश के सबसे पुराने किलों में से एक है, और ब्रजेश्वरी देवी मंदिर एक प्रसिद्ध शक्तिपीठ है। धर्मशाला और मैक्लोडगंज में दलाई लामा और बड़ा तिब्बती समुदाय रहता है। पालमपुर के चाय बागान, बैजनाथ का पुराना शिव मंदिर, मसरूर के चट्टान काटकर बने मंदिर और कांगड़ा की लघु चित्रकला घाटी के लंबे इतिहास की गवाही देते हैं, और कांगड़ी धाम हिमाचल की सबसे पसंदीदा दावतों में से एक है।',
+    },
+    placesIntro: {
+      en: 'From the white wall of the Dhauladhar to the cafés, shops and monasteries of McLeod Ganj and Dharamkot.',
+      hi: 'धौलाधार की सफ़ेद दीवार से लेकर मैक्लोडगंज और धर्मकोट के कैफ़े, दुकानों और मठों तक।',
+    },
+    places: [
+      { name: { en: 'Dhauladhar Range', hi: 'धौलाधार पर्वतमाला' }, kind: 'Mountains',
+        line: { en: 'The White Range that rises behind Dharamshala.', hi: 'धर्मशाला के पीछे उठती सफ़ेद पर्वतमाला।' },
+        about: { en: 'Dhauladhar means the White Range, named for the snow that covers its peaks for much of the year. It is part of the lower Himalaya and stands over Dharamshala like a wall: within a short distance the land climbs from the Kangra valley, at about 1,100 metres, to ridges above 4,500 metres, and the highest peak, Hanuman Tibba, rises beyond 5,600 metres.\n\nFor Himachalis the range is more than a view. Its snows and streams feed the Beas and the tributaries of the Ravi, and it divides the districts of Kangra and Chamba, with the Indrahar Pass, at 4,342 metres, one of its great crossings. The meadows near the crest are the summer pastures of the Gaddi shepherds, who have walked these routes with their flocks for generations. On a clear morning, from Dharamshala, you can see all of it.', hi: 'धौलाधार का मतलब है सफ़ेद पर्वतमाला, जिसे उसकी चोटियों पर साल के बड़े हिस्से में जमी बर्फ़ के कारण यह नाम मिला। यह निचले हिमालय का हिस्सा है और धर्मशाला के ऊपर एक दीवार की तरह खड़ी है: थोड़ी ही दूरी में ज़मीन कांगड़ा घाटी में लगभग 1,100 मीटर से उठकर 4,500 मीटर से ऊँची चोटियों तक पहुँच जाती है, और सबसे ऊँची चोटी हनुमान टिब्बा 5,600 मीटर से भी ऊपर है।\n\nहिमाचलवासियों के लिए यह पर्वतमाला सिर्फ़ एक नज़ारा नहीं है। इसकी बर्फ़ और धाराएँ ब्यास और रावी की सहायक नदियों को पानी देती हैं, और यह कांगड़ा और चंबा ज़िलों को बाँटती है, जिसका 4,342 मीटर ऊँचा इंद्रहार दर्रा इसके बड़े रास्तों में से एक है। चोटियों के पास के चरागाह गद्दी चरवाहों की गर्मियों की चरागाहें हैं, जो पीढ़ियों से अपने रेवड़ों के साथ इन रास्तों पर चलते आए हैं। साफ़ सुबह में धर्मशाला से यह सब दिखता है।' },
+        photos: ['images/districts/kangra/dhauladhar-1.webp', 'images/districts/kangra/dhauladhar-2.webp'],
+        videos: [{ src: 'images/districts/kangra/dhauladhar-video-1.mp4', poster: 'images/districts/kangra/dhauladhar-video-1.webp' }, { src: 'images/districts/kangra/dhauladhar-video-2.mp4', poster: 'images/districts/kangra/dhauladhar-video-2.webp' }], map: '' },
+      { name: { en: 'Stardome, Chohla', hi: 'स्टारडोम, छोहला' }, kind: 'Stay',
+        line: { en: 'Dome stays in Chohla with the best view of the whole valley.', hi: 'छोहला में डोम में ठहरना, पूरी घाटी का सबसे सुंदर नज़ारा।' },
+        about: { en: 'Stardome is in Chohla, above Dharamshala, and it is a must-stay for the view. From the top you can see the whole Dharamshala valley spread out below, in the morning mist and again at night, when the valley glitters with lights. The views are amazing, and so is the food.\n\nYou sleep in a dome with a glass window onto the mountains, and the café, hung with prayer flags and fairy lights under a ceiling of wicker lamps, is a lovely place to sit. Best of all is Toffee, the best boy, who will accompany you everywhere around the café, and who sits looking over the valley at night as if he owns it.', hi: 'स्टारडोम धर्मशाला के ऊपर छोहला में है, और नज़ारे के लिए यहाँ ज़रूर ठहरना चाहिए। ऊपर से पूरी धर्मशाला घाटी नीचे फैली दिखती है, सुबह की धुंध में भी और रात को भी, जब घाटी रोशनियों से जगमगाती है। नज़ारे कमाल के हैं, और खाना भी।\n\nआप पहाड़ों की ओर काँच की खिड़की वाले डोम में सोते हैं, और कैफ़े, जिस पर प्रार्थना-पताकाएँ और परी-रोशनियाँ सजी हैं और छत पर बेंत की लालटेनें लटकती हैं, बैठने की प्यारी जगह है। सबसे ख़ास है टॉफ़ी, सबसे प्यारा लड़का, जो कैफ़े में हर जगह आपके साथ चलेगा, और रात को घाटी को ऐसे निहारता बैठा रहता है जैसे यह सब उसी का हो।' },
+        photos: ['images/districts/kangra/stardome-1.webp', 'images/districts/kangra/stardome-2.webp', 'images/districts/kangra/stardome-3.webp', 'images/districts/kangra/stardome-4.webp', 'images/districts/kangra/stardome-5.webp', 'images/districts/kangra/stardome-6.webp', 'images/districts/kangra/stardome-7.webp'], map: '' },
+      { name: { en: 'Dalai Lama Temple (Tsuglagkhang)', hi: 'दलाई लामा मंदिर (सुगलागखांग)' }, kind: 'Temple',
+        line: { en: 'The Tsuglagkhang, the heart of the Tibetan community in exile.', hi: 'सुगलागखांग, निर्वासित तिब्बती समुदाय का केंद्र।' },
+        about: { en: 'The Tsuglagkhang, or Central Temple, is the Dalai Lama’s temple in McLeod Ganj, and the most important Buddhist temple in exile. The 14th Dalai Lama fled Tibet in 1959, India gave him asylum, and in 1960 he settled here, in a town that came to be called Little Lhasa. The temple stands at the heart of a complex that holds his residence, the Namgyal Monastery, which carries out the rituals and prayers he performs, the offices of the Tibetan government in exile, and a museum.\n\nInside, behind the Dalai Lama’s teaching seat, sits a gilded Buddha, with Padmasambhava, the Indian teacher who carried Buddhism to Tibet, and Avalokiteshvara, the Buddha of Compassion, shown with many arms and heads. The Avalokiteshvara is a replica of the ancient image in the Jokhang temple in Lhasa. Around the complex runs the kora, the path pilgrims walk clockwise, spinning prayer wheels as they go.\n\nFor Buddhists, and above all for Tibetans, this is the place that keeps Tibet alive in exile. Pilgrims come all year, and the temple is a place of quiet for anyone who steps in.', hi: 'सुगलागखांग, यानी मुख्य मंदिर, मैक्लोडगंज में दलाई लामा का मंदिर है और निर्वासन में सबसे महत्वपूर्ण बौद्ध मंदिर। 14वें दलाई लामा 1959 में तिब्बत से भागे, भारत ने उन्हें शरण दी, और 1960 में वे यहाँ बस गए, उस शहर में जो ‘छोटा ल्हासा’ कहलाने लगा। मंदिर एक परिसर के बीच में है, जिसमें उनका निवास, नामग्याल मठ (जो उनके किए जाने वाले अनुष्ठान और प्रार्थनाएँ संपन्न कराता है), निर्वासित तिब्बती सरकार के दफ़्तर और एक संग्रहालय है।\n\nअंदर, दलाई लामा के उपदेश-आसन के पीछे सुनहरे बुद्ध विराजमान हैं, और उनके साथ पद्मसंभव, वह भारतीय आचार्य जो बौद्ध धर्म को तिब्बत ले गए, और अवलोकितेश्वर, करुणा के बुद्ध, जिन्हें कई भुजाओं और सिरों के साथ दिखाया जाता है। अवलोकितेश्वर की मूर्ति ल्हासा के जोखांग मंदिर की प्राचीन मूर्ति की प्रतिकृति है। परिसर के चारों ओर कोरा का रास्ता है, जिस पर तीर्थयात्री घड़ी की दिशा में चलते हुए प्रार्थना-चक्र घुमाते हैं।\n\nबौद्धों के लिए, और सबसे ज़्यादा तिब्बतियों के लिए, यह वह जगह है जो निर्वासन में तिब्बत को जीवित रखती है। तीर्थयात्री साल भर आते हैं, और यह मंदिर हर आने वाले के लिए शांति की जगह है।' },
+        photos: ['images/districts/kangra/dalai-lama-temple-1.webp', 'images/districts/kangra/dalai-lama-temple-2.webp', 'images/districts/kangra/dalai-lama-temple-3.webp', 'images/districts/kangra/dalai-lama-temple-4.webp', 'images/districts/kangra/dalai-lama-temple-5.webp'],
+        videos: [{ src: 'images/districts/kangra/dalai-lama-temple-video-1.mp4', poster: 'images/districts/kangra/dalai-lama-temple-video-1.webp' }], map: '' },
+      { name: { en: 'Norbulingka Institute', hi: 'नोरबुलिंगका संस्थान' }, kind: 'Culture',
+        line: { en: 'Tibetan arts and culture, with a museum and gardens.', hi: 'तिब्बती कला और संस्कृति, संग्रहालय और बाग़ों के साथ।' },
+        about: { en: 'Norbulingka Institute, at Sidhpur near Dharamshala, was created to keep Tibetan arts and culture alive in exile. It was officially opened by the Dalai Lama in 1995, and takes its name from the Norbulingka summer palace in Lhasa. In its studios, craftspeople practise thangka painting, appliqué, statue making, woodcarving and metalwork, and train young Tibetans in these skills.\n\nIts Deden Tsuglagkhang, the Temple of the Seat of Happiness, stands among Japanese-style gardens, with a huge gilded Buddha and walls painted with more than a thousand images of the Buddha and the Dalai Lamas. At the end of your visit you can wear traditional Tibetan clothes, and inside the complex there is a museum that shows the tribes, costumes and history of Tibet in miniature scenes, using dolls dressed in the costumes of its regions.', hi: 'नोरबुलिंगका संस्थान, धर्मशाला के पास सिद्धपुर में, निर्वासन में तिब्बती कला और संस्कृति को जीवित रखने के लिए बनाया गया था। इसका औपचारिक उद्घाटन 1995 में दलाई लामा ने किया, और इसका नाम ल्हासा के नोरबुलिंगका ग्रीष्म महल पर पड़ा है। इसके स्टूडियो में कारीगर थंका चित्रकला, एप्लीक, मूर्तिकला, काष्ठकला और धातुकला करते हैं और युवा तिब्बतियों को ये हुनर सिखाते हैं।\n\nइसका देदेन सुगलागखांग, यानी सुख के आसन का मंदिर, जापानी शैली के बाग़ों के बीच है, जिसमें विशाल सुनहरे बुद्ध हैं और दीवारों पर बुद्ध और दलाई लामाओं की एक हज़ार से ज़्यादा छवियाँ चित्रित हैं। यात्रा के अंत में आप पारंपरिक तिब्बती कपड़े पहन सकते हैं, और परिसर के भीतर एक संग्रहालय है, जो तिब्बत के क्षेत्रों की पोशाक पहने गुड़ियों के ज़रिए छोटे-छोटे दृश्यों में वहाँ के जनजातीय समुदायों, पोशाकों और इतिहास को दिखाता है।' },
+        photos: ['images/districts/kangra/norbulingka-1.webp', 'images/districts/kangra/norbulingka-2.webp', 'images/districts/kangra/norbulingka-3.webp', 'images/districts/kangra/norbulingka-4.webp', 'images/districts/kangra/norbulingka-5.webp', 'images/districts/kangra/norbulingka-6.webp', 'images/districts/kangra/norbulingka-7.webp', 'images/districts/kangra/norbulingka-8.webp', 'images/districts/kangra/norbulingka-9.webp', 'images/districts/kangra/norbulingka-10.webp', 'images/districts/kangra/norbulingka-11.webp'],
+        videos: [{ src: 'images/districts/kangra/norbulingka-video-1.mp4', poster: 'images/districts/kangra/norbulingka-video-1.webp' }], map: '' },
+      { name: { en: 'Cafe at Norbulingka', hi: 'नोरबुलिंगका का कैफ़े' }, kind: 'Cafe',
+        line: { en: 'A bright café inside the Norbulingka complex.', hi: 'नोरबुलिंगका परिसर के भीतर एक उजला कैफ़े।' },
+        about: { en: 'A café inside the Norbulingka complex, with Tibetan lamps, painted beams and a window onto the garden. A pleasant place to rest after the studios and the temple.', hi: 'नोरबुलिंगका परिसर के भीतर एक कैफ़े, जिसमें तिब्बती लालटेनें, चित्रित कड़ियाँ और बाग़ की ओर खुलती खिड़की है। स्टूडियो और मंदिर देखने के बाद आराम करने की सुखद जगह।' },
+        photos: ['images/districts/kangra/norbulingka-cafe-1.webp'], map: '' },
+      { name: { en: 'Gallu Waterfall trek', hi: 'गल्लू झरने का ट्रेक' }, kind: 'Trek',
+        line: { en: 'A forest walk from Dharamkot to a waterfall over boulders.', hi: 'धर्मकोट से जंगल के रास्ते चट्टानों पर गिरते झरने तक की सैर।' },
+        about: { en: 'A walk from Dharamkot through deodar forest, with views over the valley, to a waterfall tumbling over boulders. Wear shoes with a good grip: the rocks near the water are slippery.', hi: 'धर्मकोट से देवदार के जंगल से होकर, घाटी के नज़ारों के साथ, चट्टानों पर गिरते झरने तक की सैर। अच्छी पकड़ वाले जूते पहनें: पानी के पास की चट्टानें फिसलन भरी हैं।' },
+        photos: ['images/districts/kangra/gallu-waterfall-1.webp', 'images/districts/kangra/gallu-waterfall-2.webp', 'images/districts/kangra/gallu-waterfall-3.webp', 'images/districts/kangra/gallu-waterfall-4.webp', 'images/districts/kangra/gallu-waterfall-5.webp'], map: '' },
+      { name: { en: 'Dharamkot', hi: 'धर्मकोट' }, kind: 'Village',
+        line: { en: 'A quiet village above McLeod Ganj, with forest views and sunsets.', hi: 'मैक्लोडगंज के ऊपर एक शांत गाँव, जंगल के नज़ारों और सूर्यास्त के साथ।' },
+        about: { en: 'Dharamkot is a quiet village above McLeod Ganj, in the pine and deodar forest, with cafés, guesthouses and trekking trails that lead up the mountain. Strings of prayer flags, valley views and golden sunsets over the forest make it a lovely place to slow down.', hi: 'धर्मकोट मैक्लोडगंज के ऊपर चीड़ और देवदार के जंगल में एक शांत गाँव है, जहाँ कैफ़े, गेस्टहाउस और पहाड़ पर चढ़ते ट्रेकिंग के रास्ते हैं। प्रार्थना-पताकाओं की लड़ियाँ, घाटी के नज़ारे और जंगल पर सुनहरे सूर्यास्त इसे ठहरकर धीमा होने की प्यारी जगह बनाते हैं।' },
+        photos: ['images/districts/kangra/dharamkot-1.webp', 'images/districts/kangra/dharamkot-2.webp', 'images/districts/kangra/dharamkot-3.webp', 'images/districts/kangra/dharamkot-4.webp'], map: '' },
+      { name: { en: 'Zostel Dharamkot', hi: 'ज़ोस्टल धर्मकोट' }, kind: 'Stay',
+        line: { en: 'A hostel in Dharamkot with a terrace and a wall of flower pots.', hi: 'धर्मकोट में छत और फूलों के गमलों की दीवार वाला हॉस्टल।' },
+        about: { en: 'A Zostel hostel in Dharamkot, in a brick building with a wall of red flower pots and a stone-ringed terrace with views of the forest.', hi: 'धर्मकोट में एक ज़ोस्टल हॉस्टल, ईंटों की इमारत में, जहाँ लाल फूलों के गमलों की दीवार और जंगल की ओर खुलती पत्थरों से घिरी छत है।' },
+        photos: ['images/districts/kangra/zostel-dharamkot-1.webp'], map: '' },
+      { name: { en: 'Dakini House Cafe', hi: 'डाकिनी हाउस कैफ़े' }, kind: 'Cafe',
+        line: { en: 'Best for breakfast, with an amazing view.', hi: 'नाश्ते के लिए सबसे बढ़िया, शानदार नज़ारे के साथ।' },
+        about: { en: 'Dakini House Cafe, in McLeod Ganj, is best for breakfast, with an amazing view over the valley. It is a bright, airy café with big windows, plants and prayer flags, and a lovely place to read a book or get some work done.', hi: 'मैक्लोडगंज का डाकिनी हाउस कैफ़े नाश्ते के लिए सबसे बढ़िया है, घाटी के शानदार नज़ारे के साथ। यह बड़ी खिड़कियों, पौधों और प्रार्थना-पताकाओं वाला उजला, खुला कैफ़े है, और किताब पढ़ने या कुछ काम निपटाने की प्यारी जगह।' },
+        photos: ['images/districts/kangra/dakini-house-cafe-1.webp', 'images/districts/kangra/dakini-house-cafe-2.webp', 'images/districts/kangra/dakini-house-cafe-3.webp'], map: '' },
+      { name: { en: 'Gallery Cafe', hi: 'गैलरी कैफ़े' }, kind: 'Cafe',
+        line: { en: 'Amazing desserts and coffee.', hi: 'शानदार मिठाइयाँ और कॉफ़ी।' },
+        about: { en: 'Gallery Cafe, in McLeod Ganj, is known for its amazing desserts and coffee. Its walls are hung with Tibetan thangkas and carpets, and a glass counter is full of cakes and bakes.', hi: 'मैक्लोडगंज का गैलरी कैफ़े अपनी शानदार मिठाइयों और कॉफ़ी के लिए जाना जाता है। इसकी दीवारों पर तिब्बती थंका और क़ालीन टँगे हैं, और काँच का काउंटर केक और बेकरी से भरा रहता है।' },
+        photos: ['images/districts/kangra/gallery-cafe-1.webp', 'images/districts/kangra/gallery-cafe-2.webp', 'images/districts/kangra/gallery-cafe-3.webp', 'images/districts/kangra/gallery-cafe-4.webp'], map: '' },
+      { name: { en: 'Norwang Cafe & Restaurant', hi: 'नोरवांग कैफ़े और रेस्तरां' }, kind: 'Cafe',
+        line: { en: 'A Santorini-themed café with karaoke.', hi: 'सेंटोरिनी थीम वाला कैफ़े, जिसमें कराओके है।' },
+        about: { en: 'Norwang Cafe & Restaurant in McLeod Ganj is Santorini-themed, with blue-and-white decor and glowing blue ceiling lights, and it has karaoke.', hi: 'मैक्लोडगंज का नोरवांग कैफ़े और रेस्तरां सेंटोरिनी थीम पर है, नीले-सफ़ेद सजावट और चमकती नीली छत-रोशनी के साथ, और यहाँ कराओके भी है।' },
+        photos: ['images/districts/kangra/norwang-cafe-1.webp'], map: '' },
+      { name: { en: 'The little bakery', hi: 'छोटी-सी बेकरी' }, kind: 'Food',
+        line: { en: 'The best dessert in McLeod Ganj, from the kindest man.', hi: 'मैक्लोडगंज की सबसे बढ़िया मिठाई, सबसे भले इंसान से।' },
+        about: { en: 'A little bakery run by the kindest man in McLeod Ganj, who makes the best desserts in town. Its glass counter is lined with brownies, cakes and pies.', hi: 'मैक्लोडगंज की एक छोटी-सी बेकरी, जिसे वहाँ के सबसे भले इंसान चलाते हैं और जहाँ शहर की सबसे बढ़िया मिठाइयाँ बनती हैं। इसके काँच के काउंटर पर ब्राउनी, केक और पाई सजे रहते हैं।' },
+        photos: ['images/districts/kangra/little-bakery-1.webp'], map: '' },
+      { name: { en: 'Streets of McLeod Ganj', hi: 'मैक्लोडगंज की गलियाँ' }, kind: 'Walk',
+        line: { en: 'Little shops, prayer beads and Tibetan buildings.', hi: 'छोटी दुकानें, माला के मनके और तिब्बती इमारतें।' },
+        about: { en: 'McLeod Ganj’s streets are lined with little shops selling prayer beads, thangkas, silver and woollens, with Tibetan buildings and prayer flags overhead. The best way to see them is to wander without a plan.', hi: 'मैक्लोडगंज की गलियों में प्रार्थना की मालाएँ, थंका, चाँदी और ऊनी कपड़े बेचती छोटी दुकानें क़तार में हैं, और ऊपर तिब्बती इमारतें और प्रार्थना-पताकाएँ। इन्हें देखने का सबसे अच्छा तरीक़ा है बिना योजना के भटकना।' },
+        photos: ['images/districts/kangra/mcleod-streets-1.webp', 'images/districts/kangra/mcleod-streets-2.webp'], map: '' },
+      { name: { en: 'Tibetan thangka shops', hi: 'तिब्बती थंका की दुकानें' }, kind: 'Shop',
+        line: { en: 'Thangka paintings, mandalas and Buddhist art.', hi: 'थंका चित्र, मंडल और बौद्ध कला।' },
+        about: { en: 'Thangkas are Tibetan Buddhist paintings on cloth, showing the Buddha, deities and mandalas, and McLeod Ganj has many shops selling them, along with silks and Buddhist art. These two shops show rolled and framed thangkas in rich red and gold.', hi: 'थंका कपड़े पर बने तिब्बती बौद्ध चित्र हैं, जिनमें बुद्ध, देवता और मंडल दिखते हैं, और मैक्लोडगंज में इन्हें बेचती कई दुकानें हैं, रेशम और बौद्ध कला के साथ। ये दो दुकानें गहरे लाल और सुनहरे रंगों में लिपटे और फ़्रेम किए थंका दिखाती हैं।' },
+        photos: ['images/districts/kangra/thangka-shops-1.webp', 'images/districts/kangra/thangka-shops-2.webp'], map: '' },
+      { name: { en: 'Jewels of Tibet', hi: 'ज्वेल्स ऑफ़ तिब्बत' }, kind: 'Shop',
+        line: { en: 'Rare jewels from Tibet.', hi: 'तिब्बत के दुर्लभ गहने।' },
+        about: { en: 'Jewels of Tibet, at 6-A, is a shop of rare jewels and treasures from Tibet, with glass cases and shelves of silver, beads, bowls and antiques, a treasure hunt of a shop.', hi: '6-A पर ज्वेल्स ऑफ़ तिब्बत तिब्बत के दुर्लभ गहनों और ख़ज़ानों की दुकान है, जिसके काँच के शोकेस और अलमारियों में चाँदी, मनके, कटोरे और पुरानी चीज़ें सजी हैं, ख़ज़ाने की खोज जैसी एक दुकान।' },
+        photos: ['images/districts/kangra/jewels-of-tibet-1.webp', 'images/districts/kangra/jewels-of-tibet-2.webp', 'images/districts/kangra/jewels-of-tibet-3.webp', 'images/districts/kangra/jewels-of-tibet-4.webp'], map: '' },
+      { name: { en: 'The postcard shop', hi: 'पोस्टकार्ड वाली दुकान' }, kind: 'Shop',
+        line: { en: 'A little gift shop run by a very talented woman who sells the prettiest postcards.', hi: 'एक बहुत हुनरमंद महिला की छोटी-सी गिफ़्ट शॉप, जहाँ सबसे सुंदर पोस्टकार्ड मिलते हैं।' },
+        about: { en: 'A little shop in McLeod Ganj run by a very talented woman who sells the prettiest postcards. A must-visit gift shop.', hi: 'मैक्लोडगंज की एक छोटी-सी दुकान, जिसे एक बहुत हुनरमंद महिला चलाती हैं और जहाँ सबसे सुंदर पोस्टकार्ड मिलते हैं। ज़रूर जाने लायक़ गिफ़्ट शॉप।' },
+        photos: ['images/districts/kangra/postcard-shop-1.webp'], map: '' },
+      { name: { en: 'Dharamshala–McLeod Ganj cable car', hi: 'धर्मशाला–मैक्लोडगंज केबल कार' }, kind: 'Cable car',
+        line: { en: 'A ride in the air from Dharamshala up to McLeod Ganj.', hi: 'धर्मशाला से मैक्लोडगंज तक हवा में एक सवारी।' },
+        about: { en: 'A cable car now links Dharamshala to McLeod Ganj, carrying you up over the forest in a few minutes instead of a long, winding road. Watch the video to see the view from the cabin.', hi: 'अब एक केबल कार धर्मशाला को मैक्लोडगंज से जोड़ती है, और लंबी घुमावदार सड़क की जगह कुछ ही मिनटों में आपको जंगल के ऊपर से ऊपर ले जाती है। केबिन से दिखता नज़ारा देखने के लिए वीडियो देखें।' },
+        photos: [],
+        videos: [{ src: 'images/districts/kangra/cable-car-video-1.mp4', poster: 'images/districts/kangra/cable-car-video-1.webp' }], map: '' },
+    ],
+  },
+
+  solan: {
+    tagline: { en: 'Tomatoes, mushrooms and the goddess Shoolini', hi: 'टमाटर, खुंब और शूलिनी माता का शहर' },
+    banner: 'images/districts/solan/banner.webp', bannerPos: 'center 50%', credit: '',
+    about: {
+      en: 'Solan takes its name from the goddess Shoolini, whose fair fills the town every June. The district is known for its tomatoes and for mushrooms, and the town is often called the Mushroom City of India. Nearby are the old hill stations of Kasauli and Chail, the Barog tunnel on the Kalka–Shimla railway, and the fort of Arki with its painted walls.',
+      hi: 'सोलन का नाम शूलिनी देवी के नाम पर पड़ा है, जिनका मेला हर जून में शहर को भर देता है। ज़िला अपने टमाटर और खुंब के लिए जाना जाता है, और शहर को अक्सर भारत की मशरूम सिटी कहा जाता है। पास में कसौली और चायल जैसे पुराने पर्वतीय स्थल, कालका–शिमला रेलवे की बड़ोग सुरंग और चित्रों से सजी दीवारों वाला अर्की का किला हैं।',
+    },
+    placesIntro: {
+      en: '',
+      hi: '',
+    },
+    galleryTitle: { en: 'On the road through Solan', hi: 'सोलन की सड़क पर' },
+    gallery: [
+      { photo: 'images/districts/solan/highway-1.webp', caption: { en: 'The Solan–Chandigarh highway', hi: 'सोलन–चंडीगढ़ राजमार्ग' } },
+      { photo: 'images/districts/solan/highway-2.webp', caption: { en: 'Green hills on the way', hi: 'रास्ते की हरी पहाड़ियाँ' } },
+      { photo: 'images/districts/solan/highway-3.webp', caption: { en: 'Through a tunnel', hi: 'सुरंग के भीतर से' } },
+    ],
+  },
+
+  hamirpur: {
+    tagline: { en: 'Land of schools and soldiers', hi: 'स्कूलों और सैनिकों की धरती' },
+    banner: 'images/districts/hamirpur/banner.webp', bannerPos: 'center 50%', credit: '',
+    about: {
+      en: 'Hamirpur is known for its schools and colleges, and for the many families who have someone in the armed forces. Sujanpur Tira, on the Beas, was a capital of the Katoch kings, with its fort, old temples and one of the largest chaugan grounds in the state, where the Holi fair is held every year. Baba Balak Nath’s cave temple at Deotsidh draws pilgrims for the Chaitra fair, and the Tauni Devi temple stands in the hills nearby.',
+      hi: 'हमीरपुर अपने स्कूलों और कॉलेजों के लिए जाना जाता है, और उन कई परिवारों के लिए जिनका कोई न कोई सदस्य सेना या सुरक्षा बलों में है। ब्यास किनारे बसा सुजानपुर टीहरा कटोच राजाओं की राजधानी रहा है, जहाँ उनका किला, पुराने मंदिर और प्रदेश के सबसे बड़े चौगानों में से एक है, जिस पर हर साल होली का मेला लगता है। देवटसिध में बाबा बालक नाथ की गुफा का मंदिर चैत्र मेले में श्रद्धालुओं को खींचता है, और पास की पहाड़ियों में तौनी देवी का मंदिर है।',
+    },
+    placesIntro: { en: '', hi: '' }, places: [],
+  },
+
+  una: {
+    tagline: { en: 'The southern gateway', hi: 'दक्षिणी द्वार' },
+    banner: 'images/districts/una/banner.webp', bannerPos: 'center 50%', credit: '',
+    about: {
+      en: 'Una sits on the border with Punjab and is the gateway into Himachal from the plains, in the low Shivalik foothills. It is best known for Chintpurni, a Shakti Peeth that draws lakhs of pilgrims, especially during the Navratri fairs, and for the Dera Baba Barbhag Singh gurdwara. The Gobind Sagar lake reaches into the district, and the food here has a Punjabi flavour.',
+      hi: 'ऊना पंजाब की सीमा पर है और मैदानों से हिमाचल में प्रवेश का द्वार है, शिवालिक की निचली तलहटी में। यह चिंतपूर्णी के लिए सबसे ज़्यादा जाना जाता है, जो एक शक्तिपीठ है और खासकर नवरात्र के मेलों में लाखों श्रद्धालुओं को बुलाता है, और डेरा बाबा बर्भाग सिंह गुरुद्वारे के लिए भी। गोबिंद सागर झील ज़िले तक फैली है, और यहाँ के खाने में पंजाबी स्वाद है।',
+    },
+    placesIntro: { en: '', hi: '' }, places: [],
+  },
+
+  bilaspur: {
+    tagline: { en: 'Kahlur of the seven hills', hi: 'सात पहाड़ियों का कहलूर' },
+    banner: 'images/districts/bilaspur/banner.webp', bannerPos: 'center 55%', credit: '',
+    about: {
+      en: 'Bilaspur was the capital of the old state of Kahlur, nicknamed Kahlur of the seven hills. Its Gobind Sagar lake, made when the Bhakra Dam closed the Sutlej, spreads across about 170 square kilometres and has changed the face of the district. Naina Devi, on a hilltop above the lake, is one of the great Shakti Peeths. The Nalwari fair, held in March or April with wrestling and cattle trading, is the district’s liveliest event.',
+      hi: 'बिलासपुर पुराने कहलूर राज्य की राजधानी था, जिसे सात पहाड़ियों का कहलूर कहा जाता था। भाखड़ा बाँध के सतलुज को रोकने से बनी गोबिंद सागर झील लगभग 170 वर्ग किलोमीटर में फैली है और उसने ज़िले की सूरत बदल दी है। झील के ऊपर पहाड़ी पर बसा नैना देवी बड़े शक्तिपीठों में से एक है। मार्च या अप्रैल में कुश्ती और पशु-व्यापार के साथ लगने वाला नलवाड़ी मेला ज़िले का सबसे रंगीन उत्सव है।',
+    },
+    placesIntro: {
+      en: '',
+      hi: '',
+    },
+    galleryTitle: { en: 'Bilaspur in pictures', hi: 'तस्वीरों में बिलासपुर' },
+    gallery: [
+      { photo: 'images/districts/bilaspur/bilaspur-1.webp', caption: { en: 'Green fields around Bilaspur', hi: 'बिलासपुर के आसपास हरे खेत' } },
+    ],
+  },
+
+  chamba: {
+    tagline: { en: 'Temples, rumals and the Ravi valley', hi: 'मंदिरों, रुमालों और रावी घाटी की धरती' },
+    banner: 'images/districts/chamba/banner.webp', bannerPos: 'center 50%', credit: '',
+    about: {
+      en: 'Chamba, on the Ravi, is one of the oldest towns in the hills. The Lakshmi Narayan temples, the open Chaugan ground and the palace tell of its royal past, and the Chamba rumal, embroidered on cloth, is a famous craft. The Minjar fair marks the season each summer. Further up, Bharmour with its cluster of old temples is the homeland of the Gaddi shepherds, and Khajjiar, Dalhousie and the remote Pangi valley are also in this district. The spicy Chamba chukh is a local favourite.',
+      hi: 'रावी किनारे बसा चंबा पहाड़ों के सबसे पुराने शहरों में से एक है। लक्ष्मी नारायण मंदिर, खुला चौगान और महल इसके शाही अतीत की कहानी कहते हैं, और कपड़े पर कढ़ाई वाला चंबा रुमाल एक मशहूर कला है। हर गर्मियों में मिंजर मेला मौसम का स्वागत करता है। थोड़ा ऊपर भरमौर, जहाँ पुराने मंदिरों का समूह है, गद्दी चरवाहों की मातृभूमि है, और खजियार, डलहौज़ी और दूर-दराज़ की पांगी घाटी भी इसी ज़िले में हैं। तीखा चंबा चुख यहाँ का पसंदीदा स्वाद है।',
+    },
+    placesIntro: {
+      en: 'A hill station on five hills, facing the snows.',
+      hi: 'पाँच पहाड़ियों पर बसा पहाड़ी शहर, बर्फ़ की ओर मुँह किए।',
+    },
+    places: [
+      { name: { en: 'Dalhousie', hi: 'डलहौज़ी' }, kind: 'Hill station',
+        line: { en: 'A colonial hill station built across five hills.', hi: 'पाँच पहाड़ियों पर बसा एक औपनिवेशिक पहाड़ी शहर।' },
+        about: { en: 'Lord Dalhousie founded the town in 1854, taking five hills, Kathlog, Potreyn, Tehra, Bakrota and Balun, from the ruler of Chamba as a place to rest in the mountains, and the town is named after him. At around 2,000 metres, among deodar and pine, it looks across to the snows of the Pir Panjal and Dhauladhar ranges.\n\nThe slate-roofed houses, old churches and long walks around the hills still feel like another era, and the meadow of Khajjiar is about 21 km away. Netaji Subhas Chandra Bose stayed here for months in 1937. In the evenings the old streets glow around cafés like the one in the last photo.', hi: 'लॉर्ड डलहौज़ी ने इस शहर की नींव 1854 में रखी, चंबा के शासक से पाँच पहाड़ियाँ (कठलग, पोट्रेन, तेहरा, बकरोटा और बलुन) लेकर, पहाड़ों में आराम की जगह के रूप में, और शहर का नाम उन्हीं के नाम पर है। लगभग 2,000 मीटर की ऊँचाई पर, देवदार और चीड़ के बीच, यह पीर पंजाल और धौलाधार की बर्फ़ की ओर देखता है।\n\nस्लेट की छतों वाले घर, पुराने गिरजाघर और पहाड़ियों के चारों ओर लंबी सैर आज भी किसी और दौर जैसी लगती है, और खजियार का मैदान लगभग 21 किलोमीटर दूर है। नेताजी सुभाष चंद्र बोस 1937 में यहाँ महीनों रुके थे। शाम को पुरानी गलियाँ कैफ़े के आसपास जगमगाती हैं, जैसा आख़िरी तस्वीर में दिखता है।' },
+        photos: ['images/districts/chamba/dalhousie-1.webp', 'images/districts/chamba/dalhousie-2.webp', 'images/districts/chamba/dalhousie-3.webp', 'images/districts/chamba/dalhousie-4.webp', 'images/districts/chamba/dalhousie-5.webp', 'images/districts/chamba/dalhousie-6.webp'], map: '' },
+    ],
+  },
+
+  kinnaur: {
+    tagline: { en: 'Apples, Kailash and the road to Tibet', hi: 'सेब, कैलाश और तिब्बत की राह' },
+    banner: 'images/districts/kinnaur/banner.webp', bannerPos: 'center 40%', credit: '',
+    about: {
+      en: 'Kinnaur lies along the Sutlej and the old road to Tibet, in the shadow of Kinner Kailash, a peak sacred to both Hindus and Buddhists. Kalpa looks across to the mountain, the Sangla valley follows the Baspa river up to Chitkul, one of the last villages before the border, and the district is famous for its apples, shawls and caps. Kinnauri is the language here, and the Phulaich flower festival is among its best-loved celebrations.',
+      hi: 'किन्नौर सतलुज और तिब्बत की पुरानी राह के किनारे बसा है, किन्नर कैलाश की छाया में, जो हिंदुओं और बौद्धों दोनों के लिए पवित्र शिखर है। कल्पा से इस पर्वत का नज़ारा मिलता है, सांगला घाटी बस्पा नदी के साथ चितकुल तक जाती है, जो सीमा से पहले के आखिरी गाँवों में से एक है, और ज़िला अपने सेब, शॉल और टोपियों के लिए मशहूर है। यहाँ की भाषा किन्नौरी है, और फूलों का उत्सव फुलैच इसके सबसे प्रिय त्योहारों में से एक है।',
+    },
+    placesIntro: { en: '', hi: '' }, places: [],
+  },
+
+  'lahaul-spiti': {
+    tagline: { en: 'The high cold desert', hi: 'ऊँचा ठंडा रेगिस्तान' },
+    banner: 'images/districts/lahaul-spiti/banner.webp', bannerPos: 'center 45%', credit: '',
+    about: {
+      en: 'Lahaul and Spiti is a high-altitude cold desert of bare mountains, deep valleys and clear skies. Its monasteries, Key, Dhankar and Tabo among them, have kept Buddhist art and learning alive for centuries. Kaza is the main town of Spiti and Keylong of Lahaul, Chandratal is a lake that glows blue in summer, and the Atal Tunnel now links Lahaul to Manali through the mountains. Lahauli and Spitian are spoken here, and the winters are long and quiet.',
+      hi: 'लाहौल और स्पीति ऊँचाई पर बसा ठंडा रेगिस्तान है, जहाँ नंगे पहाड़, गहरी घाटियाँ और साफ़ आसमान हैं। की, धनकर और ताबो जैसे इसके मठों ने सदियों से बौद्ध कला और ज्ञान को ज़िंदा रखा है। काज़ा स्पीति का और केलांग लाहौल का मुख्य शहर है, चंद्रताल गर्मियों में नीली चमक वाली झील है, और अब अटल सुरंग पहाड़ों के बीच से लाहौल को मनाली से जोड़ती है। यहाँ लाहौली और स्पीतियन बोली जाती हैं, और सर्दियाँ लंबी और शांत होती हैं।',
+    },
+    placesIntro: { en: '', hi: '' }, places: [],
+  },
+
+  sirmaur: {
+    tagline: { en: 'The southern hills', hi: 'दक्षिण की पहाड़ियाँ' },
+    banner: 'images/districts/sirmaur/banner.webp', bannerPos: 'center 50%', credit: '',
+    about: {
+      en: 'Sirmaur is the southernmost district of Himachal, where the hills meet the plains. Renuka, the largest natural lake in the state, hosts the Renuka fair every November. Paonta Sahib, on the Yamuna, is the gurdwara linked with Guru Gobind Singh, who lived here for about three years, and Churdhar, at 3,647 metres, is the highest peak of the district and a trekkers’ favourite. Nahan is the district town, and Sirmauri is the language of the hills.',
+      hi: 'सिरमौर हिमाचल का सबसे दक्षिणी ज़िला है, जहाँ पहाड़ मैदानों से मिलते हैं। राज्य की सबसे बड़ी प्राकृतिक झील रेणुका हर नवंबर में रेणुका मेले की मेज़बानी करती है। यमुना किनारे पाँवटा साहिब का गुरुद्वारा गुरु गोबिंद सिंह जी से जुड़ा है, जो यहाँ लगभग तीन साल रहे, और 3,647 मीटर ऊँचा चूड़धार ज़िले की सबसे ऊँची चोटी और ट्रेकिंग करने वालों की पसंदीदा जगह है। नाहन ज़िले का मुख्य शहर है, और सिरमौरी यहाँ की बोली है।',
+    },
+    placesIntro: { en: '', hi: '' }, places: [],
+  },
+};

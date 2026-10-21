@@ -8,6 +8,9 @@ styles.css      the approved design, plus the detail view and phone layout
 app.js          navigation, live Supabase data, audio, Read more, submissions
 backgrounds.js  the list of home page background photos (edit this to change them)
 i18n.js         all the Hindi wording (edit this to change Hindi text)
+translit.js     the offline 'English letters to Hindi' helper used on the Submit page
+districts.js    the text, photos and local favourites for each district page
+supabase/       the two Supabase queries (setup, and the Phrase + Culture entries)
 images/         artwork and photos; background photos live in images/backgrounds/
 vercel.json     caching for images
 ```
@@ -17,6 +20,41 @@ vercel.json     caching for images
 - **Home hero:** one fixed-shape stage (the approved composition) scaled to fit any screen, so the panel, lettering and text keep the same proportions and never zoom. Photos behind it fill the screen.
 - **Phones (portrait, up to 860px wide):** built from the Canva mobile designs. Own portrait photos (`m-hero-*.webp`) and panel (`m-panel.webp`). The header shows MENU and ABOUT; MENU opens a panel that pushes the page down.
 - **About:** short version with the full letter under "Read the full story".
+
+## Supabase setup (run once, in this order)
+
+Supabase > **SQL Editor** > **New query**, paste a file from the `supabase/` folder, **Run**:
+1. `supabase_setup_v2.sql` adds the new columns, creates or fixes the `submissions` table, sets the permissions, and creates the `Pictures` storage bucket. It is safe to run again.
+2. `supabase_update_v3.sql` adds the columns for translator credit, other spellings and Hindi text. It is safe to run again.
+3. `supabase_add_phrase_and_culture.sql` adds the phrase "Ghaur auṇā" and the culture entry "Dhaam". It only adds them if they are not there yet.
+
+If the Submit form says it can't send, the message on the page (with a "Technical details" box) says exactly what Supabase answered. Usually it means step 1 has not been run.
+
+## What each Submit form asks for
+
+Word and Phrase have no separate title (the Hindi text is the title). Story, Memory, Song, Audio and Culture have a Title. Recipe uses the dish name in the three name boxes, then Description, Recipe and an optional picture. Audio needs a recording. Song has an artist name, Culture has "who shared this with you", Story has tags (Lullaby, Folk tale, Legend, Bedtime story). Every kind of entry also has an optional picture box. Long texts are limited to 5,000 words, Words and Phrases to 100. The "Convert English letters to Hindi" button is approximate: type a capital T, D, N or R in the middle of a word for the hard sounds (auNa gives औणा).
+
+## Categories
+
+Lullaby is shown as a Story with a "Lullaby" tag. Ballad is shown as Song, Proverb and Riddle as Phrase (each keeps a small tag), and Food is shown as Recipe. Nothing in the database needs changing for this.
+
+## District pages
+
+Picking a district from the Districts menu (or the Districts page) opens a page for that district: a banner photo, a few lines about the place, "locals' favourites" with photos, and then every entry from that district in the archive (these come from Supabase by themselves).
+
+All the text lives in `districts.js`: open it, change the English or Hindi between the quotes, save, and upload it again. Photos go in `images/districts/<district>/`, for example `images/districts/shimla/banner.webp` and `images/districts/shimla/bantony-castle.webp`. The file names are written next to each place in `districts.js`. If a photo is missing, the page shows a plain green panel, so nothing breaks. To add a local favourite, copy one `{ name: ... }` block inside "places" and edit it. A place can have several photos (`photos: [...]`): the first is on its tile, and tapping the tile shows them all. `gallery` is the strip of town photos ("Shimla in pictures").
+
+Each place has a short `line` (shown on its tile) and can have a longer `about` text and a personal `memory` (both shown in the pop-up when the tile is tapped; a blank line starts a new paragraph). Each group of places shows 6 at a time, in a new random order on every visit, and the rest open under "Show more". A district can have extra groups of places in `extraSections` (Shimla has "Beyond Shimla city"). A place with `photos: []` shows a plain green tile until photos are added.
+
+A place can also have `videos: [{ src: 'images/....mp4', poster: 'images/....webp' }]` (they play in the pop-up; a tile that has only a video uses the poster as its picture). An entry in the archive can have a `video_url` (several videos separated with `|`, see `supabase/supabase_update_v4.sql`, which adds the Nati dance).
+
+## Hindi in the cards
+
+People's names are shown in Devanagari automatically (a list of common names in `i18n.js`, otherwise by sound). For an exact spelling, fill the `_hi` column in Supabase (`artist_name_hi`, `contributor_name_hi`, `source_name_hi`, `translator_name_hi`). The Hindi meaning goes in `translation_hi`, and for recipes `description_hi` and `recipe_hi`. Tags and dialect names are translated from the list in `i18n.js` (`words`).
+
+## Search
+
+The Dictionary search ignores capitals and accents, so Amma, amma and ammaa find the same entry, and typing अम्मा finds entries written in English letters. Results are grouped: exact matches first, then similar spellings, then looser mentions. For a tricky word, list other spellings in the `spellings` column in Supabase (for example `ama, ammaa`).
 
 ## Languages (English and Hindi)
 

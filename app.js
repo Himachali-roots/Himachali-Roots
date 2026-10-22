@@ -42,7 +42,8 @@ function t(key, ...args){
 }
 const typeName = (tp) => LANG === 'hi' ? (HI_TYPES[String(tp).toLowerCase()] || tp) : tp;
 const districtName = (d) => LANG === 'hi' ? (HI_DISTRICTS[String(d).toLowerCase()] || d) : d;
-const descOf = (e) => (LANG === 'hi' && e.descHi) ? e.descHi : e.desc;   // Hindi meaning if the table has one
+const descOf = (e) => (LANG === 'hi' && e.descHi) ? e.descHi : e.desc;
+const memoryOf = (e) => (LANG === 'hi' && e.memoryHi) ? e.memoryHi : e.memory;   // Hindi meaning if the table has one
 function storedLang(){ try { return localStorage.getItem(LANG_KEY); } catch (e) { return null; } }
 function saveLang(l){ try { localStorage.setItem(LANG_KEY, l); } catch (e) {} }
 
@@ -107,9 +108,17 @@ function shuffled(list){
 }
 
 // ---------- Live archive ----------
+// A personal note can sit inside the text itself, after a line that says [memory]. The card shows only the text before it;
+// the note appears as its own section ("A memory") in Read more. (Works with no extra column in the table.)
+const MEMORY_MARK = /\s*\[memory\]\s*/i;
+function splitMemory(s){ const p = String(s || '').split(MEMORY_MARK); return { main: p[0].trim(), memory: p.slice(1).join('\n\n').trim() }; }
 function normalizeRow(row, i){
   const title = str(row, 'title', 'word');
-  const desc = str(row, 'translation', 'english_translation', 'meaning', 'context');
+  const dm = splitMemory(str(row, 'translation', 'english_translation', 'meaning', 'context'));
+  const dh = splitMemory(str(row, 'translation_hi', 'hindi_translation', 'meaning_hi'));
+  const dd = splitMemory(str(row, 'description'));
+  const desc = dm.main;
+  const memory = dm.memory || dd.memory || str(row, 'memory');
   const original = str(row, 'original_text', 'originalText');
   if (!title && !desc && !original) return null;
   const status = str(row, 'status').toLowerCase();
@@ -120,13 +129,15 @@ function normalizeRow(row, i){
     title: title || desc.slice(0, 40),
     trans: str(row, 'transliteration', 'romanization', 'pronunciation'),
     desc,
-    descHi: str(row, 'translation_hi', 'hindi_translation', 'meaning_hi'),
+    descHi: dh.main,
+    memory,
+    memoryHi: dh.memory || str(row, 'memory_hi'),
     original,
     district: str(row, 'district', 'region') || 'All',
     type: normType(str(row, 'type', 'entry_type')),
     dialect: str(row, 'dialect', 'language'),
     tags: [...new Set([...splitList(str(row, 'tags')), legacyTag(str(row, 'type', 'entry_type'))].filter(Boolean))],
-    description: str(row, 'description'),
+    description: dd.main,
     recipe: str(row, 'recipe'),
     image: str(row, 'image_url', 'imageUrl', 'picture_url'),
     video: str(row, 'video_url'),
@@ -215,7 +226,7 @@ function richText(text){
     return `<p>${lines.map(inline).join('<br>')}</p>`;
   }).join('');
 }
-function isLong(e){ return Boolean(e.original || e.description || e.recipe || e.image || e.video) || e.desc.length > 220 || (e.descHi || '').length > 220 || e.trans.length > 160; }
+function isLong(e){ return Boolean(e.original || e.description || e.recipe || e.image || e.video || e.memory) || e.desc.length > 220 || (e.descHi || '').length > 220 || e.trans.length > 160; }
 function preview(text, max = 150){
   const flat = (text || '').replace(/^#{1,4}\s+.*$/gm, '').replace(/\*\*/g, '').replace(/\s+/g, ' ').trim();
   return flat.length > max ? flat.slice(0, max).replace(/\s+\S*$/, '') + '…' : flat;
@@ -330,7 +341,8 @@ function openEntry(id){
     ${e.audio ? `<button class="audio-btn-inline" type="button" data-audio-id="${esc(e.id)}-full" data-audio-src="${esc(e.audio)}">${esc(t('ui.play'))}</button>` : ''}
     ${pic}
     ${vids}
-    ${body}`;
+    ${body}
+    ${modalSection(t('ui.memory'), memoryOf(e), 'memory')}`;
   wireImages($('entry-modal-body'));
   $('entry-modal').hidden = false;
   document.body.classList.add('modal-open');
@@ -871,6 +883,7 @@ function renderContributionFields(type){
   const saved = box.dataset.type ? captureFields() : { text: {}, files: {}, tags: [] };
   formType = FORMS[type] ? type : 'Word';
   box.dataset.type = formType;
+  const recipeNote = $('connection-recipe-note'); if (recipeNote) recipeNote.hidden = formType !== 'Recipe';   // a recipe's note is shown on the site, so say so
   box.innerHTML = FORMS[formType].fields.map(k => fieldHTML(k)).join('');
   restoreFields(saved);
   updateCounts();

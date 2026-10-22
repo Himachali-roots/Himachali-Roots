@@ -868,3 +868,9 @@ html.lang-hi .place-memory p:last-child{font-style:normal;line-height:1.85;}
 .modal-videos{display:grid;gap:14px;margin-top:22px;}
 .modal-videos video{display:block;width:100%;max-height:72vh;background:#000;border:1px solid rgba(45,80,22,.25);}
 @media (max-width:860px) and (max-aspect-ratio:1/1){ .modal-videos{gap:calc(var(--m)*12);margin-top:calc(var(--m)*18);} }
+
+/* A personal note inside an entry's Read more ("A memory") */
+.modal-section.memory{margin-top:26px;padding:18px 22px;background:var(--light-sage);border-left:3px solid var(--terra);}
+.modal-section.memory .rt{font-style:italic;}
+html.lang-hi .modal-section.memory .rt{font-style:normal;}
+@media (max-width:860px) and (max-aspect-ratio:1/1){ .modal-section.memory{margin-top:calc(var(--m)*20);padding:calc(var(--m)*14) calc(var(--m)*16);} }

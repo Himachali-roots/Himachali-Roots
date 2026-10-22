@@ -48,6 +48,8 @@ Each place has a short `line` (shown on its tile) and can have a longer `about` 
 
 A place can also have `videos: [{ src: 'images/....mp4', poster: 'images/....webp' }]` (they play in the pop-up; a tile that has only a video uses the poster as its picture). An entry in the archive can have a `video_url` (several videos separated with `|`, see `supabase/supabase_update_v4.sql`, which adds the Nati dance).
 
+A personal note can be added to any entry without a new column: write it at the end of the entry's `translation` text after a line that says `[memory]`. The card shows only the text before it; the note appears as its own "A memory" section in Read more. `supabase/supabase_publish_fit_existing.sql` adds it automatically for every Recipe whose sender wrote something in the "connection" box (no note = no heading); for other types it is private unless you list the submission ids.
+
 ## Hindi in the cards
 
 People's names are shown in Devanagari automatically (a list of common names in `i18n.js`, otherwise by sound). For an exact spelling, fill the `_hi` column in Supabase (`artist_name_hi`, `contributor_name_hi`, `source_name_hi`, `translator_name_hi`). The Hindi meaning goes in `translation_hi`, and for recipes `description_hi` and `recipe_hi`. Tags and dialect names are translated from the list in `i18n.js` (`words`).

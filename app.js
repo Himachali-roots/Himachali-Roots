@@ -802,6 +802,207 @@ function renderDictionary(query){
 
 // ---------- Submissions ----------
 const LIMITS = { short: 100, long: 5000 };          // words
+// ===================================================================================================================
+// RECORD A VOICE RIGHT ON THE PAGE (for the "A recording" box of the Submit form)
+//  - asks the visitor first, then asks the browser for the microphone
+//  - records, then cleans the sound (removes steady background hiss, evens out the volume) and saves it as a .wav,
+//    which every phone and computer can play
+//  - the visitor can switch the cleaning off, play it back, record again, or remove it
+// ===================================================================================================================
+const REC = { state: 'idle', stream: null, mr: null, chunks: [], ctx: null, analyser: null, raf: 0, timer: 0, t0: 0, raw: null, clean: null, rate: 24000, useClean: true, file: null, url: '', error: '', secs: 0 };
+const REC_MAX_SECONDS = 120;
+const recSupported = () => !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder && (window.AudioContext || window.webkitAudioContext));
+
+// ---------- sound processing (plain maths, no page needed) ----------
+function biquad(x, type, fc, rate, q = 0.7071){
+  const w0 = 2 * Math.PI * fc / rate, cosw = Math.cos(w0), alpha = Math.sin(w0) / (2 * q);
+  let b0, b1, b2;
+  if (type === 'highpass'){ b0 = (1 + cosw) / 2; b1 = -(1 + cosw); b2 = (1 + cosw) / 2; } else { b0 = (1 - cosw) / 2; b1 = 1 - cosw; b2 = (1 - cosw) / 2; }
+  const a0 = 1 + alpha, a1 = -2 * cosw, a2 = 1 - alpha, y = new Float32Array(x.length);
+  let x1 = 0, x2 = 0, y1 = 0, y2 = 0;
+  for (let i = 0; i < x.length; i++){ const xi = x[i], yi = (b0 * xi + b1 * x1 + b2 * x2 - a1 * y1 - a2 * y2) / a0; y[i] = yi; x2 = x1; x1 = xi; y2 = y1; y1 = yi; }
+  return y;
+}
+function fft(re, im){                                           // in-place radix-2 FFT
+  const n = re.length;
+  for (let i = 1, j = 0; i < n; i++){ let bit = n >> 1; for (; j & bit; bit >>= 1) j ^= bit; j ^= bit; if (i < j){ let t = re[i]; re[i] = re[j]; re[j] = t; t = im[i]; im[i] = im[j]; im[j] = t; } }
+  for (let len = 2; len <= n; len <<= 1){
+    const ang = -2 * Math.PI / len, wr = Math.cos(ang), wi = Math.sin(ang), half = len >> 1;
+    for (let i = 0; i < n; i += len){ let cr = 1, ci = 0;
+      for (let k = 0; k < half; k++){ const a = i + k, b = a + half, tr = re[b] * cr - im[b] * ci, ti = re[b] * ci + im[b] * cr;
+        re[b] = re[a] - tr; im[b] = im[a] - ti; re[a] += tr; im[a] += ti; const ncr = cr * wr - ci * wi; ci = cr * wi + ci * wr; cr = ncr; } }
+  }
+}
+function evenOut(x){                                            // bring the loudest moment up to about 90% (never more than +18 dB)
+  let peak = 0; for (let i = 0; i < x.length; i++){ const a = Math.abs(x[i]); if (a > peak) peak = a; }
+  if (peak < 1e-4) return x;
+  const g = Math.min(0.89 / peak, 8); if (Math.abs(g - 1) < 0.02) return x;
+  const y = new Float32Array(x.length); for (let i = 0; i < x.length; i++) y[i] = x[i] * g; return y;
+}
+// Removes steady background noise (hiss, fan, room tone). For every frequency it learns how loud the noise is (from that frequency's quietest
+// moments, so it also works when the speaker never pauses), then turns that frequency down only where the voice is not louder than the noise.
+// The noise is never turned down completely (it stays natural), and the voice peaks are left almost untouched.
+function cleanSpeech(input, rate){
+  const N = 512, H = 128, nb = N / 2 + 1, ALPHA = 1.4, GMIN = 0.2, REL = 0.7, PCT = 0.2, PCT_TO_MEAN = 1.9;
+  const x = biquad(biquad(input, 'highpass', 70, rate), 'lowpass', Math.min(9500, rate * 0.45), rate);   // cut rumble below 70 Hz and hiss above the voice
+  if (x.length < N * 12) return evenOut(x);
+  const win = new Float32Array(N); for (let i = 0; i < N; i++) win[i] = Math.sqrt(0.5 - 0.5 * Math.cos(2 * Math.PI * i / N));
+  const frames = Math.floor((x.length - N) / H) + 1, mag = new Float32Array(frames * nb), re = new Float32Array(N), im = new Float32Array(N);
+  for (let f = 0; f < frames; f++){
+    const o = f * H; for (let i = 0; i < N; i++){ re[i] = x[o + i] * win[i]; im[i] = 0; }
+    fft(re, im); for (let k = 0; k < nb; k++) mag[f * nb + k] = Math.hypot(re[k], im[k]);
+  }
+  const noise = new Float32Array(nb), col = new Float32Array(frames);
+  for (let k = 0; k < nb; k++){ for (let f = 0; f < frames; f++) col[f] = mag[f * nb + k]; noise[k] = Float32Array.from(col).sort()[Math.floor(frames * PCT)] * PCT_TO_MEAN; }
+  const nz = new Float32Array(nb); for (let k = 0; k < nb; k++) nz[k] = (noise[Math.max(0, k - 1)] + 2 * noise[k] + noise[Math.min(nb - 1, k + 1)]) / 4;
+  const out = new Float32Array(x.length), prev = new Float32Array(nb).fill(1), olaNorm = (N / H) / 2;
+  for (let f = 0; f < frames; f++){
+    const o = f * H; for (let i = 0; i < N; i++){ re[i] = x[o + i] * win[i]; im[i] = 0; }
+    fft(re, im);
+    const fa = Math.max(0, f - 1) * nb, fb = Math.min(frames - 1, f + 1) * nb;
+    for (let k = 0; k < nb; k++){
+      const m = 0.5 * mag[f * nb + k] + 0.25 * (mag[fa + k] + mag[fb + k]);      // steadier loudness (no flutter)
+      let g = m > 1e-9 ? 1 - ALPHA * nz[k] / m : 0; g = g < GMIN ? GMIN : (g > 1 ? 1 : g);
+      if (g < prev[k]) g = REL * prev[k] + (1 - REL) * g;                           // let the volume fall slowly, so word endings are not clipped
+      prev[k] = g; re[k] *= g; im[k] *= g; if (k > 0 && k < nb - 1){ re[N - k] *= g; im[N - k] *= g; }
+    }
+    for (let i = 0; i < N; i++) im[i] = -im[i];                                     // inverse FFT through the conjugate
+    fft(re, im);
+    for (let i = 0; i < N; i++) out[o + i] += (re[i] / N) * win[i] / olaNorm;
+  }
+  return evenOut(out);
+}
+function encodeWav(samples, rate){
+  const buf = new ArrayBuffer(44 + samples.length * 2), v = new DataView(buf);
+  const w = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
+  w(0, 'RIFF'); v.setUint32(4, 36 + samples.length * 2, true); w(8, 'WAVE'); w(12, 'fmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+  v.setUint32(24, rate, true); v.setUint32(28, rate * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true); w(36, 'data'); v.setUint32(40, samples.length * 2, true);
+  for (let i = 0; i < samples.length; i++){ const s = Math.max(-1, Math.min(1, samples[i])); v.setInt16(44 + i * 2, s < 0 ? s * 0x8000 : s * 0x7FFF, true); }
+  return new Blob([buf], { type: 'audio/wav' });
+}
+async function decodeToMono(blob, rate){
+  const AC = window.AudioContext || window.webkitAudioContext, ctx = new AC();
+  try {
+    const ab = await blob.arrayBuffer();
+    const buf = await new Promise((res, rej) => { const p = ctx.decodeAudioData(ab, res, rej); if (p && p.then) p.then(res, rej); });
+    const OAC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+    const off = new OAC(1, Math.max(1, Math.ceil(buf.duration * rate)), rate), src = off.createBufferSource();
+    src.buffer = buf; src.connect(off.destination); src.start();
+    const out = await new Promise((res, rej) => { const p = off.startRendering(); if (p && p.then) p.then(res, rej); else off.oncomplete = e => res(e.renderedBuffer); });
+    return new Float32Array(out.getChannelData(0));
+  } finally { try { ctx.close(); } catch (e){} }
+}
+window.HR_AUDIO = { cleanSpeech, encodeWav, decodeToMono };      // (also lets the sound cleaning be tested on its own)
+
+// ---------- the recorder box ----------
+const recFmt = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+function recEl(){ return document.querySelector('#contribution-fields .rec'); }
+function recAllowedHere(){ return FORMS[formType].fields.some(k => FIELD[k].name === 'audio'); }
+function recSetInputRequired(){                                  // a recording made here counts as the file for a "recording required" form
+  const inp = document.querySelector('#contribution-fields input[type=file][name=audio]'); if (!inp) return;
+  const f = FORMS[formType].fields.map(k => FIELD[k]).find(x => x.name === 'audio'); inp.required = !!(f && f.req && !REC.file);
+}
+function recRender(){
+  const box = recEl(); if (!box) return;
+  const panel = box.querySelector('.rec-panel'), btn = box.querySelector('.rec-btn'), or = box.querySelector('.rec-or');
+  box.dataset.state = REC.state;
+  const idle = REC.state === 'idle';
+  if (btn) btn.hidden = !idle || !recSupported(); if (or) or.hidden = !idle || !recSupported();
+  let h = '';
+  if (!recSupported() && idle) h = `<div class="rec-card note"><p>${esc(t('rec.unsupported'))}</p></div>`;
+  else if (REC.state === 'consent') h = `<div class="rec-card"><p class="rec-title">${esc(t('rec.consentTitle'))}</p><p class="rec-body">${esc(t('rec.consentBody'))}</p>
+      <div class="rec-actions"><button type="button" class="rec-go" data-rec="allow">${esc(t('rec.allow'))}</button><button type="button" class="rec-ghost" data-rec="cancel">${esc(t('rec.cancel'))}</button></div></div>`;
+  else if (REC.state === 'recording') h = `<div class="rec-card live"><p class="rec-title"><span class="rec-dot"></span><span data-rec-time>${recFmt(REC.secs)}</span><span class="rec-sep">·</span><span>${esc(t('rec.recording'))}</span></p>
+      <div class="rec-meter"><i data-rec-level></i></div><p class="rec-tip">${esc(t('rec.tip'))}</p>
+      <div class="rec-actions"><button type="button" class="rec-go" data-rec="stop">${esc(t('rec.stop'))}</button><button type="button" class="rec-ghost" data-rec="cancel">${esc(t('rec.cancel'))}</button></div></div>`;
+  else if (REC.state === 'processing') h = `<div class="rec-card"><p class="rec-title"><span class="rec-spin"></span>${esc(t('rec.processing'))}</p></div>`;
+  else if (REC.state === 'review') h = `<div class="rec-card ok"><p class="rec-title">✓ ${esc(t('rec.ready'))} (${recFmt(REC.secs)})</p><audio controls preload="metadata" src="${esc(REC.url)}"></audio>
+      <label class="rec-check"><input type="checkbox" data-rec="clean"${REC.useClean ? ' checked' : ''}/> ${esc(t('rec.reduce'))}</label>
+      <div class="rec-actions"><button type="button" class="rec-ghost" data-rec="again">${esc(t('rec.again'))}</button><button type="button" class="rec-ghost" data-rec="remove">${esc(t('rec.remove'))}</button></div></div>`;
+  else if (REC.state === 'error') h = `<div class="rec-card err"><p>${esc(REC.error)}</p><div class="rec-actions"><button type="button" class="rec-go" data-rec="open">${esc(t('rec.retry'))}</button></div></div>`;
+  panel.innerHTML = h; panel.hidden = !h;
+}
+function recStopHardware(){
+  clearInterval(REC.timer); cancelAnimationFrame(REC.raf);
+  try { if (REC.mr && REC.mr.state !== 'inactive'){ REC.mr.onstop = null; REC.mr.stop(); } } catch (e){}
+  try { if (REC.stream) REC.stream.getTracks().forEach(tr => tr.stop()); } catch (e){}
+  try { if (REC.ctx) REC.ctx.close(); } catch (e){}
+  REC.mr = null; REC.stream = null; REC.ctx = null; REC.analyser = null;
+}
+function recReset(){
+  recStopHardware(); if (REC.url){ try { URL.revokeObjectURL(REC.url); } catch (e){} }
+  Object.assign(REC, { state: 'idle', chunks: [], raw: null, clean: null, file: null, url: '', error: '', secs: 0, useClean: true });
+  recSetInputRequired(); recRender();
+}
+function recBuildFile(){                                         // the .wav that will be sent with the form
+  const samples = (REC.useClean && REC.clean) ? REC.clean : REC.raw;
+  REC.file = new File([encodeWav(samples, REC.rate)], 'recording.wav', { type: 'audio/wav' });
+  if (REC.url){ try { URL.revokeObjectURL(REC.url); } catch (e){} }
+  REC.url = URL.createObjectURL(REC.file);
+}
+function recOpen(){
+  if (!recSupported()){ recRender(); return; }
+  let ok = false; try { ok = sessionStorage.getItem('hr_mic_ok') === '1'; } catch (e){}
+  if (ok) recStart(); else { REC.state = 'consent'; recRender(); }
+}
+async function recStart(){
+  try { sessionStorage.setItem('hr_mic_ok', '1'); } catch (e){}
+  REC.state = 'recording'; REC.secs = 0; REC.chunks = []; recRender();
+  try {
+    REC.stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true, channelCount: 1 } });
+  } catch (e){
+    REC.state = 'error'; REC.error = (e && (e.name === 'NotAllowedError' || e.name === 'SecurityError')) ? t('rec.denied') : (e && e.name === 'NotFoundError') ? t('rec.nomic') : t('rec.fail');
+    try { sessionStorage.removeItem('hr_mic_ok'); } catch (e2){} recRender(); return;
+  }
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext; REC.ctx = new AC(); if (REC.ctx.resume) REC.ctx.resume();
+    const src = REC.ctx.createMediaStreamSource(REC.stream); REC.analyser = REC.ctx.createAnalyser(); REC.analyser.fftSize = 1024; src.connect(REC.analyser);
+    const type = ['audio/webm;codecs=opus', 'audio/mp4', 'audio/webm', 'audio/ogg;codecs=opus'].find(m => window.MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(m));
+    REC.mr = type ? new MediaRecorder(REC.stream, { mimeType: type }) : new MediaRecorder(REC.stream);
+    REC.mr.ondataavailable = (ev) => { if (ev.data && ev.data.size) REC.chunks.push(ev.data); };
+    REC.mr.onstop = recFinish; REC.mr.start(250);
+  } catch (e){ recStopHardware(); REC.state = 'error'; REC.error = t('rec.fail'); recRender(); return; }
+  REC.t0 = Date.now(); const buf = new Uint8Array(REC.analyser.fftSize);
+  REC.timer = setInterval(() => {
+    REC.secs = (Date.now() - REC.t0) / 1000; const el = document.querySelector('[data-rec-time]'); if (el) el.textContent = recFmt(REC.secs);
+    if (REC.secs >= REC_MAX_SECONDS) recStop();
+  }, 200);
+  const tick = () => {
+    if (!REC.analyser) return; REC.analyser.getByteTimeDomainData(buf); let s = 0; for (let i = 0; i < buf.length; i++){ const v = (buf[i] - 128) / 128; s += v * v; }
+    const lv = document.querySelector('[data-rec-level]'); if (lv) lv.style.width = Math.min(100, Math.sqrt(s / buf.length) * 420) + '%'; REC.raf = requestAnimationFrame(tick);
+  }; tick();
+}
+function recStop(){ if (REC.mr && REC.mr.state === 'recording'){ clearInterval(REC.timer); cancelAnimationFrame(REC.raf); REC.secs = (Date.now() - REC.t0) / 1000; REC.mr.stop(); } }
+async function recFinish(){
+  const secs = REC.secs, blob = new Blob(REC.chunks, { type: (REC.mr && REC.mr.mimeType) || 'audio/webm' });
+  try { if (REC.stream) REC.stream.getTracks().forEach(tr => tr.stop()); } catch (e){} try { if (REC.ctx) REC.ctx.close(); } catch (e){}
+  REC.stream = null; REC.ctx = null; REC.analyser = null;
+  if (secs < 1){ REC.state = 'error'; REC.error = t('rec.short'); recRender(); return; }
+  REC.state = 'processing'; recRender();
+  try {
+    await new Promise(r => setTimeout(r, 30));
+    REC.raw = await decodeToMono(blob, REC.rate);
+    await new Promise(r => setTimeout(r, 30));
+    try { REC.clean = cleanSpeech(REC.raw, REC.rate); } catch (e){ REC.clean = null; }
+    REC.useClean = !!REC.clean; REC.secs = REC.raw.length / REC.rate; recBuildFile();
+    REC.state = 'review'; recSetInputRequired();
+    const inp = document.querySelector('#contribution-fields input[type=file][name=audio]'); if (inp) inp.value = '';
+  } catch (e){ REC.state = 'error'; REC.error = t('rec.fail'); }
+  recRender();
+}
+document.addEventListener('click', (ev) => {
+  const b = ev.target.closest('[data-rec], .rec-btn'); if (!b) return;
+  if (b.classList.contains('rec-btn')){ recOpen(); return; }
+  const a = b.dataset.rec;
+  if (a === 'allow') recStart(); else if (a === 'cancel') recReset(); else if (a === 'stop') recStop(); else if (a === 'open') recOpen();
+  else if (a === 'again'){ recReset(); recOpen(); } else if (a === 'remove') recReset();
+});
+document.addEventListener('change', (ev) => {
+  const el = ev.target;
+  if (el.matches && el.matches('[data-rec="clean"]')){ REC.useClean = el.checked; recBuildFile(); const au = document.querySelector('.rec audio'); if (au){ au.src = REC.url; au.load(); } }
+  else if (el.matches && el.matches('#contribution-fields input[type=file][name=audio]') && el.files && el.files.length && REC.state !== 'idle') recReset();   // choosing a file replaces a recording
+});
+
 const MAX_AUDIO_MB = 25, MAX_IMAGE_MB = 10;
 const IMAGE_BUCKET = 'Pictures';
 const STORY_TAGS = ['Lullaby', 'Folk tale', 'Legend', 'Bedtime story'];
@@ -820,8 +1021,8 @@ const FIELD = {
   context:      { name: 'context',         kind: 'text',  label: 'f.context', ph: 'f.contextPh', rows: 3 },
   description:  { name: 'description',     kind: 'text',  label: 'f.description', ph: 'f.descriptionPh', req: true, rows: 4 },
   recipe:       { name: 'recipe',          kind: 'text',  label: 'f.recipe', ph: 'f.recipePh', req: true, rows: 6 },
-  audio:        { name: 'audio',           kind: 'file',  label: 'f.audio', accept: 'audio/*' },
-  audioReq:     { name: 'audio',           kind: 'file',  label: 'f.audioReq', accept: 'audio/*', req: true },
+  audio:        { name: 'audio',           kind: 'file',  label: 'f.audio', accept: 'audio/*,.m4a,.mp3,.wav,.aac,.ogg,.opus,.webm,.caf,.amr,.3gp,.mp4,.flac' },
+  audioReq:     { name: 'audio',           kind: 'file',  label: 'f.audioReq', accept: 'audio/*,.m4a,.mp3,.wav,.aac,.ogg,.opus,.webm,.caf,.amr,.3gp,.mp4,.flac', req: true },
   image:        { name: 'image',           kind: 'file',  label: 'f.image', accept: 'image/*' },
 };
 // What each kind of contribution asks for, in order. (District, dialect, village and "About you" are the same for all.)
@@ -869,11 +1070,12 @@ function fieldHTML(key){
     return `<label class="field-block${half}"><span class="field-label">${label}</span>${none}<input class="field" name="${f.name}"${ph}${req} autocomplete="off"/><span class="field-extra"></span></label>`;
   if (f.kind === 'file'){
     // a recording gets a small "How to add" arrow under the box that opens the steps (outside the label, so tapping it never opens the file picker)
-    const howto = f.accept === 'audio/*'
+    const rec = f.name === 'audio' ? `<div class="rec" data-state="idle"><button type="button" class="rec-btn"><span class="rec-btn-dot" aria-hidden="true"></span>${esc(t('rec.btn'))}</button> <span class="rec-or">${esc(t('rec.or'))}</span><div class="rec-panel" hidden></div></div>` : '';
+    const howto = f.name === 'audio'
       ? `<details class="howto"><summary><span class="howto-arrow" aria-hidden="true">▾</span> ${esc(t('f.howto'))}</summary>
           <ol>${[1, 2, 3, 4, 5].map(n => `<li>${esc(t('f.howto' + n))}</li>`).join('')}</ol>
           <p>${esc(t('f.howtoHelp'))} <a href="https://ig.me/m/the.himachali.roots" target="_blank" rel="noopener noreferrer">${esc(t('f.howtoLink'))}</a></p></details>` : '';
-    return `<div class="field-block${half}"><label class="field-label" for="f-${f.name}">${label}</label>${none}<input class="field" id="f-${f.name}" name="${f.name}" type="file" accept="${f.accept}"${req}/><span class="field-extra">${howto}</span></div>`;
+    return `<div class="field-block${half}"><label class="field-label" for="f-${f.name}">${label}</label>${none}<input class="field" id="f-${f.name}" name="${f.name}" type="file" accept="${f.accept}"${req}/><span class="field-extra">${rec}${howto}</span></div>`;
   }
   let hint = f.hint ? t(f.hint) : '';
   if (key === 'hindi') hint = t('f.hindiHint.' + cfg.hindi);
@@ -920,6 +1122,7 @@ function renderContributionFields(type){
   box.innerHTML = FORMS[formType].fields.map(k => fieldHTML(k)).join('');
   restoreFields(saved);
   updateCounts();
+  recRender(); recSetInputRequired();
 }
 function updateCounts(){
   document.querySelectorAll('#contribution-fields [data-count]').forEach(span => {
@@ -976,6 +1179,8 @@ function showFormError(message, details){
   err.scrollIntoView({ block: 'center', behavior: 'smooth' });
 }
 
+const MIME_BY_EXT = { m4a: 'audio/mp4', mp4: 'audio/mp4', aac: 'audio/aac', mp3: 'audio/mpeg', mpeg: 'audio/mpeg', mpga: 'audio/mpeg', wav: 'audio/wav', ogg: 'audio/ogg', oga: 'audio/ogg', opus: 'audio/ogg', webm: 'audio/webm', caf: 'audio/x-caf', amr: 'audio/amr', '3gp': 'audio/3gpp', flac: 'audio/flac', jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp', gif: 'image/gif', heic: 'image/heic' };
+const uploadType = (file, ext) => (file.type && file.type !== 'application/octet-stream') ? file.type : (MIME_BY_EXT[ext] || 'application/octet-stream');
 async function uploadFile(bucket, file){
   const ext = ((file.name.split('.').pop() || 'bin').toLowerCase()).replace(/[^a-z0-9]/g, '') || 'bin';
   const path = `submissions/${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${ext}`;
@@ -984,7 +1189,7 @@ async function uploadFile(bucket, file){
     let res;
     try {
       res = await fetch(`${SUPABASE_URL}/storage/v1/object/${bucket}/${path}`, {
-        method: 'POST', headers: { ...headers, 'Content-Type': file.type || 'application/octet-stream', 'x-upsert': 'false' }, body: file });
+        method: 'POST', headers: { ...headers, 'Content-Type': uploadType(file, ext), 'x-upsert': 'false' }, body: file });
     } catch (err){ problems.push(`Upload to "${bucket}": network error (${err.message})`); break; }
     if (res.ok) return `${SUPABASE_URL}/storage/v1/object/public/${bucket}/${path}`;
     problems.push(await explain(res, `Upload to "${bucket}"`));
@@ -1065,7 +1270,7 @@ function initSubmissionsPage(){
       if (wordCount(val(f.name)) > lim){ showFormError(t('f.over', lim)); box.querySelector(`[name="${f.name}"]`).focus(); return; }
     }
     if (['Word', 'Phrase', 'Recipe'].includes(formType) && !val('original_text') && !val('transliteration')){ showFormError(t('f.errHindiOrRoman')); return; }
-    const audioFile = fd.get('audio'), imageFile = fd.get('image');
+    const audioFile = (REC.file && recAllowedHere()) ? REC.file : fd.get('audio'), imageFile = fd.get('image');
     if (audioFile && audioFile.size > MAX_AUDIO_MB * 1024 * 1024){ showFormError(t('f.errAudioBig', MAX_AUDIO_MB)); return; }
     btn.disabled = true; btn.textContent = t('sub.sending');
     try {
@@ -1094,7 +1299,7 @@ function initSubmissionsPage(){
       };
       // only send what was actually filled in
       await postSubmission(Object.fromEntries(Object.entries(all).filter(([, v]) => v !== '')));
-      form.reset();
+      form.reset(); recReset();
       chipGrid.querySelectorAll('button').forEach((b, i) => b.classList.toggle('active', i === 0));
       box.dataset.type = ''; renderContributionFields('Word');
       $('submission-form-wrap').style.display = 'none';

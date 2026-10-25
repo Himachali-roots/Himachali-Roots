@@ -932,3 +932,39 @@ html.lang-hi .howto ol,html.lang-hi .howto p{font-size:15px;line-height:1.8;}
   html.lang-hi .howto summary{font-size:calc(var(--m)*12);}
   html.lang-hi .howto ol,html.lang-hi .howto p{font-size:calc(var(--m)*14);}
 }
+
+/* Record here (the in-page recorder under the recording box) */
+.rec{margin-top:12px;}
+.rec-btn{display:inline-flex;align-items:center;gap:9px;padding:11px 20px;border:1.5px solid var(--forest);border-radius:40px;background:var(--forest);color:var(--cloud);font:600 11px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background .2s,color .2s;}
+.rec-btn:hover{background:var(--cloud);color:var(--forest);}
+.rec-btn-dot,.rec-dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:#d1301f;flex:none;}
+.rec-dot{animation:recpulse 1s ease-in-out infinite;margin-right:8px;}
+@keyframes recpulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.8)}}
+.rec-or{margin-left:10px;color:var(--sage);font-size:13px;}
+.rec-panel{margin-top:12px;}
+.rec-card{padding:16px 18px;background:var(--cloud);border:1px solid var(--sage);border-left:3px solid var(--terra);}
+.rec-card.live{border-left-color:#d1301f;} .rec-card.ok{border-left-color:var(--forest);background:var(--light-sage);} .rec-card.err{border-left-color:#d1301f;} .rec-card.note{border-left-color:var(--sage);}
+.rec-title{margin:0 0 8px;color:var(--forest);font:600 12px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;display:flex;align-items:center;}
+.rec-body,.rec-tip,.rec-card p{margin:0 0 12px;color:var(--forest);font-size:14px;line-height:1.6;}
+.rec-tip{color:var(--sage);font-size:13px;}
+.rec-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px;}
+.rec-go,.rec-ghost{padding:10px 20px;border-radius:40px;font:600 11px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;cursor:pointer;border:1.5px solid var(--forest);}
+.rec-go{background:var(--forest);color:var(--cloud);} .rec-go:hover{background:var(--pine);}
+.rec-ghost{background:transparent;color:var(--forest);} .rec-ghost:hover{background:var(--forest);color:var(--cloud);}
+.rec-meter{height:8px;background:rgba(45,80,22,.14);border-radius:6px;overflow:hidden;margin:2px 0 12px;} .rec-meter i{display:block;height:100%;width:0;background:var(--forest);transition:width .08s linear;}
+.rec-card audio{display:block;width:100%;margin:6px 0 12px;}
+.rec-check{display:flex;align-items:center;gap:9px;margin:0 0 12px;color:var(--forest);font-size:14px;cursor:pointer;} .rec-check input{width:18px;height:18px;accent-color:var(--forest);}
+.rec-spin{display:inline-block;width:14px;height:14px;margin-right:9px;border:2px solid var(--sage);border-top-color:var(--forest);border-radius:50%;animation:recspin .8s linear infinite;}
+@keyframes recspin{to{transform:rotate(360deg)}}
+html.lang-hi .rec-btn,html.lang-hi .rec-go,html.lang-hi .rec-ghost,html.lang-hi .rec-title{font-size:14px;letter-spacing:0;text-transform:none;}
+@media (max-width:860px) and (max-aspect-ratio:1/1){
+  .rec-btn{font-size:calc(var(--m)*10);padding:calc(var(--m)*10) calc(var(--m)*18);}
+  .rec-or{display:block;margin:calc(var(--m)*8) 0 0;font-size:calc(var(--m)*12);}
+  .rec-card{padding:calc(var(--m)*14) calc(var(--m)*14);} .rec-title{font-size:calc(var(--m)*10.5);}
+  .rec-body,.rec-tip,.rec-card p{font-size:calc(var(--m)*13);} .rec-check{font-size:calc(var(--m)*13);}
+  .rec-go,.rec-ghost{font-size:calc(var(--m)*10);padding:calc(var(--m)*9) calc(var(--m)*16);}
+  html.lang-hi .rec-btn,html.lang-hi .rec-go,html.lang-hi .rec-ghost{font-size:calc(var(--m)*13);} html.lang-hi .rec-title{font-size:calc(var(--m)*13);}
+}
+
+.rec [hidden]{display:none!important;}            /* the Record button really goes away while the panel is open */
+.rec-sep{margin:0 9px;}

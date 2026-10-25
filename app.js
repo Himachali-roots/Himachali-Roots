@@ -129,6 +129,7 @@ function parseSections(s){
   return { main: p[0].trim(), parts };
 }
 const firstLine = (s) => String(s || '').split('\n')[0].trim();
+const isDev = (s) => /[\u0900-\u097F]/.test(s || '');       // is this text written in Hindi script? (those titles need more line spacing, even on the English site)
 function normalizeRow(row, i){
   const title = str(row, 'title', 'word');
   const dm = parseSections(str(row, 'translation', 'english_translation', 'meaning', 'context'));
@@ -267,7 +268,7 @@ function entryCardHTML(e, cls = '', style = 'position:relative'){
   return `<article class="entry-card ${cls}" style="${style}">
     <p class="entry-eyebrow">${esc(typeName(e.type))}${esc(tag)} · ${esc(districtLabel(e))}</p>
     ${placeLine(e) ? `<p class="entry-place">${esc(placeLine(e))}</p>` : ''}
-    <h3 class="entry-title">${esc(titleOf(e))}</h3>
+    <h3 class="entry-title${isDev(titleOf(e)) ? ' dev' : ''}">${esc(titleOf(e))}</h3>
     ${!long && e.trans ? `<p class="entry-trans">${esc(e.trans)}</p>` : ''}
     <p class="entry-desc">${esc(long ? preview(cardText(e)) : descOf(e))}</p>
     ${long ? `<button class="read-more-btn" type="button" data-entry="${esc(e.id)}">${esc(t('ui.readMore'))}</button>` : ''}
@@ -359,7 +360,7 @@ function openEntry(id){
   }
   $('entry-modal-body').innerHTML = `
     <p class="entry-eyebrow">${esc(typeName(e.type))} · ${esc(districtLabel(e))}</p>
-    <h2 class="modal-title" id="modal-title">${esc(titleOf(e))}</h2>
+    <h2 class="modal-title${isDev(titleOf(e)) ? ' dev' : ''}" id="modal-title">${esc(titleOf(e))}</h2>
     ${lines.length ? `<p class="modal-credit">${lines.map(l => `<span>${esc(l)}</span>`).join('')}</p>` : ''}
     ${tags}
     ${e.audio ? `<button class="audio-btn-inline modal-top-play" type="button" data-audio-id="${esc(e.id)}-top" data-audio-src="${esc(e.audio)}">${esc(t('ui.play'))}</button>` : ''}

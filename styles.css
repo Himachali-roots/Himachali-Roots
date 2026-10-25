@@ -904,3 +904,10 @@ html.lang-hi .entry-place{font-size:12px!important;letter-spacing:0;}
 
 /* the play button at the top of an opened card */
 .modal-top-play{margin:16px 0 2px;}
+
+/* Titles written in Hindi script: room between the lines (the tight English spacing made a long title's second line overlap the first).
+   The margins are reduced by exactly the extra space the taller lines add, so a ONE-line title stays exactly where it was. */
+.entry-title.dev{line-height:1.34!important;letter-spacing:0!important;margin:calc(16px - .18em) 0 calc(7px - .18em);}
+.modal-title.dev{line-height:1.34!important;letter-spacing:0!important;margin-top:calc(16px - .18em);}
+.entry-card:hover .entry-title.dev{letter-spacing:0!important;}
+@media (max-width:860px) and (max-aspect-ratio:1/1){ .entry-title.dev{line-height:1.32!important;margin:calc(var(--m)*22 - .15em) 0 calc(var(--m)*6 - .15em);} }

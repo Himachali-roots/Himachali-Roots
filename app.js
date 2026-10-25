@@ -867,8 +867,14 @@ function fieldHTML(key){
       <div class="tag-row">${STORY_TAGS.map(tg => `<button type="button" class="tag-chip" data-tag="${esc(tg)}" aria-pressed="false">${esc(typeName(tg))}</button>`).join('')}</div><span class="field-extra"></span></div>`;
   if (f.kind === 'input')
     return `<label class="field-block${half}"><span class="field-label">${label}</span>${none}<input class="field" name="${f.name}"${ph}${req} autocomplete="off"/><span class="field-extra"></span></label>`;
-  if (f.kind === 'file')
-    return `<label class="field-block${half}"><span class="field-label">${label}</span>${none}<input class="field" name="${f.name}" type="file" accept="${f.accept}"${req}/><span class="field-extra"></span></label>`;
+  if (f.kind === 'file'){
+    // a recording gets a small "How to add" arrow under the box that opens the steps (outside the label, so tapping it never opens the file picker)
+    const howto = f.accept === 'audio/*'
+      ? `<details class="howto"><summary><span class="howto-arrow" aria-hidden="true">▾</span> ${esc(t('f.howto'))}</summary>
+          <ol>${[1, 2, 3, 4, 5].map(n => `<li>${esc(t('f.howto' + n))}</li>`).join('')}</ol>
+          <p>${esc(t('f.howtoHelp'))} <a href="https://ig.me/m/the.himachali.roots" target="_blank" rel="noopener noreferrer">${esc(t('f.howtoLink'))}</a></p></details>` : '';
+    return `<div class="field-block${half}"><label class="field-label" for="f-${f.name}">${label}</label>${none}<input class="field" id="f-${f.name}" name="${f.name}" type="file" accept="${f.accept}"${req}/><span class="field-extra">${howto}</span></div>`;
+  }
   let hint = f.hint ? t(f.hint) : '';
   if (key === 'hindi') hint = t('f.hindiHint.' + cfg.hindi);
   if (key === 'english') hint = t('f.englishHint.' + cfg.english);

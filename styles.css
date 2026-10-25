@@ -911,3 +911,24 @@ html.lang-hi .entry-place{font-size:12px!important;letter-spacing:0;}
 .modal-title.dev{line-height:1.34!important;letter-spacing:0!important;margin-top:calc(16px - .18em);}
 .entry-card:hover .entry-title.dev{letter-spacing:0!important;}
 @media (max-width:860px) and (max-aspect-ratio:1/1){ .entry-title.dev{line-height:1.32!important;margin:calc(var(--m)*22 - .15em) 0 calc(var(--m)*6 - .15em);} }
+
+/* "How to add" under a recording box */
+.howto{margin-top:10px;}
+.howto summary{display:inline-flex;align-items:center;gap:7px;cursor:pointer;list-style:none;color:var(--terra);font:600 10px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;}
+.howto summary::-webkit-details-marker{display:none;}
+.howto-arrow{display:inline-block;font-size:13px;line-height:1;transition:transform .25s ease;}
+.howto[open] .howto-arrow{transform:rotate(180deg);}
+.howto ol{margin:12px 0 0;padding-left:22px;color:var(--forest);font-size:14px;line-height:1.6;}
+.howto li{margin:5px 0;padding-left:2px;}
+.howto p{margin:12px 0 0;color:var(--forest);font-size:13.5px;line-height:1.6;}
+.howto a{color:var(--terra);font-weight:600;text-decoration:underline;text-underline-offset:3px;}
+html.lang-hi .howto summary{font-size:13px;letter-spacing:0;text-transform:none;}
+html.lang-hi .howto ol,html.lang-hi .howto p{font-size:15px;line-height:1.8;}
+@media (max-width:860px) and (max-aspect-ratio:1/1){
+  .howto{margin-top:calc(var(--m)*8);}
+  .howto summary{font-size:calc(var(--m)*9);}
+  .howto ol{font-size:calc(var(--m)*13);margin-top:calc(var(--m)*10);padding-left:calc(var(--m)*20);}
+  .howto p{font-size:calc(var(--m)*12.5);margin-top:calc(var(--m)*10);}
+  html.lang-hi .howto summary{font-size:calc(var(--m)*12);}
+  html.lang-hi .howto ol,html.lang-hi .howto p{font-size:calc(var(--m)*14);}
+}

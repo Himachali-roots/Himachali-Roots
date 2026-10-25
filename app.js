@@ -99,6 +99,15 @@ const titleOf = (e) => (LANG === 'hi' && e.titleHi) ? e.titleHi : e.title;
 const descriptionOf = (e) => (LANG === 'hi' && e.descriptionHi) ? e.descriptionHi : e.description;
 const recipeOf = (e) => (LANG === 'hi' && e.recipeHi) ? e.recipeHi : e.recipe;
 const dialectText = (e) => splitList(e.dialect).map(typeName).join(', ');
+// the small line under the tag line: dialect · village. A dialect cell that also says the type ("Mahasui, Song") must not say "Song" twice,
+// so any part that is just the entry's type, one of its tags, or a type name (in English or Hindi) is left out.
+const placeLine = (e) => {
+  const skip = new Set([e.type, ...e.tags, ...Object.keys(I18N.types || {}), ...Object.values(I18N.types || {})].map(x => String(x).trim().toLowerCase()));
+  const dialect = splitList(e.dialect).filter(p => !skip.has(p.toLowerCase())).map(typeName).join(', ');
+  return [dialect, e.village].filter(Boolean).join(' · ');
+};
+// anything beyond the basics of an entry (the Hindi meaning is an extra only while the site is in English, since in Hindi it IS the meaning)
+const hasExtras = (e) => Boolean((LANG === 'en' && e.descHi) || e.context || e.image || e.memory || e.video);
 const splitList = (s) => String(s || '').split(',').map(x => x.trim()).filter(Boolean);
 const splitVideos = (s) => String(s || '').split('|').map(x => x.trim()).filter(Boolean);     // several videos in one cell are separated with |
 function shuffled(list){
@@ -108,17 +117,26 @@ function shuffled(list){
 }
 
 // ---------- Live archive ----------
-// A personal note can sit inside the text itself, after a line that says [memory]. The card shows only the text before it;
-// the note appears as its own section ("A memory") in Read more. (Works with no extra column in the table.)
-const MEMORY_MARK = /\s*\[memory\]\s*/i;
-function splitMemory(s){ const p = String(s || '').split(MEMORY_MARK); return { main: p[0].trim(), memory: p.slice(1).join('\n\n').trim() }; }
+// Everything a submission has beyond the basic entry is kept INSIDE the existing text columns, each part after a line like [picture]:
+//   [hindi] Hindi meaning   [context] meaning and context   [picture] picture address   [memory] the sender's connection
+//   [village] village   [tags] story tags   [description] [recipe] for recipes   [artist] [source] [translator] credits
+// The card shows only the text before the first marker; the rest appears as sections in Read more. (No extra columns needed.
+// If the table does have real columns with these names, those are used instead.)
+const SECTION_MARK = /\s*\[(hindi|context|description|recipe|picture|memory|village|tags|artist|source|translator)\]\s*/ig;
+function parseSections(s){
+  const p = String(s || '').split(SECTION_MARK), parts = {};
+  for (let i = 1; i < p.length; i += 2){ const k = p[i].toLowerCase(), v = (p[i + 1] || '').trim(); if (v) parts[k] = parts[k] ? parts[k] + '\n\n' + v : v; }
+  return { main: p[0].trim(), parts };
+}
+const firstLine = (s) => String(s || '').split('\n')[0].trim();
 function normalizeRow(row, i){
   const title = str(row, 'title', 'word');
-  const dm = splitMemory(str(row, 'translation', 'english_translation', 'meaning', 'context'));
-  const dh = splitMemory(str(row, 'translation_hi', 'hindi_translation', 'meaning_hi'));
-  const dd = splitMemory(str(row, 'description'));
+  const dm = parseSections(str(row, 'translation', 'english_translation', 'meaning', 'context'));
+  const dh = parseSections(str(row, 'translation_hi', 'hindi_translation', 'meaning_hi'));
+  const dd = parseSections(str(row, 'description'));
+  const X = { ...dd.parts, ...dh.parts, ...dm.parts };
   const desc = dm.main;
-  const memory = dm.memory || dd.memory || str(row, 'memory');
+  const memory = str(row, 'memory') || X.memory || '';
   const original = str(row, 'original_text', 'originalText');
   if (!title && !desc && !original) return null;
   const status = str(row, 'status').toLowerCase();
@@ -129,21 +147,23 @@ function normalizeRow(row, i){
     title: title || desc.slice(0, 40),
     trans: str(row, 'transliteration', 'romanization', 'pronunciation'),
     desc,
-    descHi: dh.main,
+    descHi: dh.main || X.hindi || '',
     memory,
-    memoryHi: dh.memory || str(row, 'memory_hi'),
+    memoryHi: dh.parts.memory || str(row, 'memory_hi'),
+    context: X.context || '',
+    village: str(row, 'village') || X.village || '',
     original,
     district: str(row, 'district', 'region') || 'All',
     type: normType(str(row, 'type', 'entry_type')),
     dialect: str(row, 'dialect', 'language'),
-    tags: [...new Set([...splitList(str(row, 'tags')), legacyTag(str(row, 'type', 'entry_type'))].filter(Boolean))],
-    description: dd.main,
-    recipe: str(row, 'recipe'),
-    image: str(row, 'image_url', 'imageUrl', 'picture_url'),
+    tags: [...new Set([...splitList(str(row, 'tags')), ...splitList(X.tags), legacyTag(str(row, 'type', 'entry_type'))].filter(Boolean))],
+    description: dd.main || X.description || '',
+    recipe: str(row, 'recipe') || X.recipe || '',
+    image: str(row, 'image_url', 'imageUrl', 'picture_url') || firstLine(X.picture),
     video: str(row, 'video_url'),
-    artist: credit.artist,
-    translator: credit.translator,
-    source: str(row, 'source_name'),
+    artist: credit.artist || X.artist || '',
+    translator: credit.translator || X.translator || '',
+    source: str(row, 'source_name') || X.source || '',
     titleHi: str(row, 'title_hi'),
     descriptionHi: str(row, 'description_hi'),
     recipeHi: str(row, 'recipe_hi'),
@@ -240,14 +260,18 @@ function audioButton(e){
 }
 function cardText(e){ return descriptionOf(e) || descOf(e) || e.original || ''; }
 function entryCardHTML(e, cls = '', style = 'position:relative'){
-  const long = isLong(e);
+  const compact = e.type === 'Word' || e.type === 'Phrase';              // Words and Phrases stay small: extras open with the arrow
+  const long = !compact && isLong(e);
+  const arrow = !long && hasExtras(e);
   const tag = e.tags[0] ? ` · ${typeName(e.tags[0])}` : '';
   return `<article class="entry-card ${cls}" style="${style}">
     <p class="entry-eyebrow">${esc(typeName(e.type))}${esc(tag)} · ${esc(districtLabel(e))}</p>
+    ${placeLine(e) ? `<p class="entry-place">${esc(placeLine(e))}</p>` : ''}
     <h3 class="entry-title">${esc(titleOf(e))}</h3>
     ${!long && e.trans ? `<p class="entry-trans">${esc(e.trans)}</p>` : ''}
     <p class="entry-desc">${esc(long ? preview(cardText(e)) : descOf(e))}</p>
     ${long ? `<button class="read-more-btn" type="button" data-entry="${esc(e.id)}">${esc(t('ui.readMore'))}</button>` : ''}
+    ${arrow ? `<button class="more-arrow" type="button" data-entry="${esc(e.id)}" aria-label="${esc(t('ui.moreAria'))}" title="${esc(t('ui.moreAria'))}"><span aria-hidden="true">▾</span></button>` : ''}
     ${audioButton(e)}
   </article>`;
 }
@@ -317,7 +341,7 @@ function openEntry(id){
   if (e.source) lines.push(t('ui.source', personName(e, 'source')));
   if (e.translator) lines.push(t('ui.translator', personName(e, 'translator')));
   if (e.contributor && e.contributor.toLowerCase() !== (e.translator || '').toLowerCase()) lines.push(t('ui.sharedBy', personName(e, 'contributor')));
-  if (dialectText(e)) lines.push(dialectText(e));
+  if (placeLine(e)) lines.push(placeLine(e));
   const tags = e.tags.length ? `<div class="modal-tags">${e.tags.map(tg => `<span class="modal-tag">${esc(typeName(tg))}</span>`).join('')}</div>` : '';
   const pic = e.image && !e.video ? `<img class="modal-pic" src="${esc(e.image)}" alt="${esc(titleOf(e))}" loading="lazy" data-fallback/>` : '';
   const vids = splitVideos(e.video).length ? `<div class="modal-videos">${splitVideos(e.video).map((v, i) => videoTag({ src: v, poster: i === 0 ? e.image : v.replace(/\.[a-z0-9]+$/i, '.webp') }, titleOf(e))).join('')}</div>` : '';
@@ -338,11 +362,14 @@ function openEntry(id){
     <h2 class="modal-title" id="modal-title">${esc(titleOf(e))}</h2>
     ${lines.length ? `<p class="modal-credit">${lines.map(l => `<span>${esc(l)}</span>`).join('')}</p>` : ''}
     ${tags}
-    ${e.audio ? `<button class="audio-btn-inline" type="button" data-audio-id="${esc(e.id)}-full" data-audio-src="${esc(e.audio)}">${esc(t('ui.play'))}</button>` : ''}
-    ${pic}
-    ${vids}
+    ${e.audio ? `<button class="audio-btn-inline modal-top-play" type="button" data-audio-id="${esc(e.id)}-top" data-audio-src="${esc(e.audio)}">${esc(t('ui.play'))}</button>` : ''}
     ${body}
-    ${modalSection(t('ui.memory'), memoryOf(e), 'memory')}`;
+    ${(LANG === 'en' && e.descHi) ? modalSection(t('ui.hindiMeaning'), e.descHi, 'hindi') : ''}
+    ${(e.audio && !(e.type === 'Word' || e.type === 'Phrase')) ? `<section class="modal-section listen"><p class="eyebrow">${esc(t('ui.listen'))}</p><button class="audio-btn-inline" type="button" data-audio-id="${esc(e.id)}-full" data-audio-src="${esc(e.audio)}">${esc(t('ui.play'))}</button></section>` : ''}
+    ${pic ? `<section class="modal-section picture"><p class="eyebrow">${esc(t('ui.picture'))}</p>${pic}</section>` : ''}
+    ${vids}
+    ${modalSection(t('ui.context'), e.context, 'context')}
+    ${modalSection(personName(e, 'contributor') ? t('ui.memoryFrom', personName(e, 'contributor')) : t('ui.memory'), memoryOf(e), 'memory')}`;
   wireImages($('entry-modal-body'));
   $('entry-modal').hidden = false;
   document.body.classList.add('modal-open');
@@ -883,7 +910,6 @@ function renderContributionFields(type){
   const saved = box.dataset.type ? captureFields() : { text: {}, files: {}, tags: [] };
   formType = FORMS[type] ? type : 'Word';
   box.dataset.type = formType;
-  const recipeNote = $('connection-recipe-note'); if (recipeNote) recipeNote.hidden = formType !== 'Recipe';   // a recipe's note is shown on the site, so say so
   box.innerHTML = FORMS[formType].fields.map(k => fieldHTML(k)).join('');
   restoreFields(saved);
   updateCounts();
@@ -1123,7 +1149,10 @@ function syncMenuHeight(){
   navLinks.style.maxHeight = open ? navLinks.scrollHeight + 'px' : '';
   document.body.style.paddingTop = open ? navLinks.scrollHeight + 'px' : '';
 }
+let menuSince = 0, menuY = 0;               // when a menu was last opened or toggled, and where the page was
+function markMenu(){ menuSince = Date.now(); menuY = window.scrollY; }
 function setMenu(open){
+  markMenu();
   nav.classList.toggle('menu-open', open);
   navToggle.setAttribute('aria-expanded', String(open));
   if (!open) distWrap.classList.remove('open');
@@ -1133,16 +1162,28 @@ function setMenu(open){
 navToggle.addEventListener('click', () => setMenu(!nav.classList.contains('menu-open')));
 distWrap.querySelector('button.nav-link').addEventListener('click', (e) => {
   e.preventDefault();
+  distWrap.classList.remove('suppress');
   distWrap.classList.toggle('open');
+  markMenu();
   requestAnimationFrame(syncMenuHeight);          // panel grows/shrinks, so the page follows
 });
 document.querySelectorAll('.nav-links a, .dist-menu a, .nav-about-m').forEach(a => a.addEventListener('click', () => setMenu(false)));
 window.addEventListener('resize', () => { if (!isPhoneNav()) setMenu(false); else syncMenuHeight(); });
 document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') setMenu(false); });
 
+distWrap.addEventListener('mouseleave', () => distWrap.classList.remove('suppress'));
 let lastY = 0;
 window.addEventListener('scroll', () => {
   const y = window.scrollY;
+  const phoneOpen = nav.classList.contains('menu-open'), distOpen = distWrap.classList.contains('open');
+  const hoverOpen = !isPhoneNav() && distWrap.matches(':hover') && !distWrap.classList.contains('suppress');
+  if (phoneOpen || distOpen || hoverOpen){
+    if (Date.now() - menuSince < 450){ menuY = y; }                 // opening the menu can nudge the page; ignore that
+    else if (Math.abs(y - menuY) > 6){                              // the visitor started scrolling: fold everything away
+      if (phoneOpen) setMenu(false);
+      else { distWrap.classList.remove('open'); if (hoverOpen) distWrap.classList.add('suppress'); syncMenuHeight(); }
+    }
+  }
   if (nav.classList.contains('menu-open')) { lastY = y; return; }   // never hide the header while the menu is open
   nav.style.transform = (y < 80 || y < lastY) ? 'translateY(0)' : 'translateY(-100%)';
   lastY = y;

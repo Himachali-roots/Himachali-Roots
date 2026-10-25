@@ -874,3 +874,33 @@ html.lang-hi .place-memory p:last-child{font-style:normal;line-height:1.85;}
 .modal-section.memory .rt{font-style:italic;}
 html.lang-hi .modal-section.memory .rt{font-style:normal;}
 @media (max-width:860px) and (max-aspect-ratio:1/1){ .modal-section.memory{margin-top:calc(var(--m)*20);padding:calc(var(--m)*14) calc(var(--m)*16);} }
+
+/* Cards: the small dialect · village line, and the arrow that opens the extras */
+.entry-place{margin:5px 0 0;color:var(--terra);font:500 8.5px/1.5 var(--f-mono);letter-spacing:.06em;}
+.more-arrow{display:inline-flex;align-items:center;justify-content:center;margin-top:8px;padding:0 8px 0 0;border:0;background:transparent;color:var(--terra);font:600 18px/1 var(--f-mono);cursor:pointer;transition:transform .3s ease;}
+.more-arrow:hover,.more-arrow:focus-visible{transform:translateY(3px);outline:none;}
+html.lang-hi .entry-place{font-size:12px!important;letter-spacing:0;}
+.modal-section.listen .audio-btn-inline{margin-top:4px;}
+.modal-section.picture .modal-pic{margin-top:6px;}
+.dist-wrap.suppress .dist-menu{display:none!important;}
+@media (max-width:860px) and (max-aspect-ratio:1/1){
+  .entry-place{font-size:calc(var(--m)*7);margin-top:calc(var(--m)*4);}
+  .more-arrow{font-size:calc(var(--m)*15);margin-top:calc(var(--m)*5);}
+  html.lang-hi .entry-place{font-size:calc(var(--m)*9.5)!important;}
+}
+
+/* About page, desktop: the big 01 / 02 / 03 stay big in Hindi (a general Hindi size rule was shrinking them to a small label) */
+@media (min-width:861px){
+  html.lang-hi .about-step-num{font-size:66px!important;line-height:1!important;letter-spacing:-.04em;}
+}
+
+/* The arrow sits in the bottom corner of the card, level with the play button (play is bottom-right on desktop, bottom-left on the phone) */
+.more-arrow{position:absolute;left:18px;bottom:18px;height:40px;margin:0;padding:0 8px;display:flex;align-items:center;justify-content:center;z-index:2;}
+@media (max-width:860px) and (max-aspect-ratio:1/1){
+  .more-arrow{left:auto;right:calc(var(--m)*14);bottom:calc(var(--m)*14);height:calc(var(--m)*26);margin:0;padding:0 calc(var(--m)*6);font-size:calc(var(--m)*16);}
+  /* About page, phone: the 01 / 02 / 03 in Hindi were a tiny label next to much larger Hindi headings */
+  html.lang-hi .about-step-num{font-size:calc(var(--m)*24)!important;line-height:1.1!important;}
+}
+
+/* the play button at the top of an opened card */
+.modal-top-play{margin:16px 0 2px;}

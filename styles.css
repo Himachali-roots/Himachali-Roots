@@ -974,9 +974,31 @@ html.lang-hi .rec-btn,html.lang-hi .rec-go,html.lang-hi .rec-ghost,html.lang-hi 
 @media(max-width:800px){.form-row-2{grid-template-columns:1fr;}}
 .form-row-2 .field-block{margin-top:0;}
 .district-block{margin-top:6px;}
-#district-chips{margin-top:4px;}
 .tag-other-input{margin-top:10px;max-width:440px;}
 .thanks-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:28px;}
 @media (max-width:860px) and (max-aspect-ratio:1/1){ .thanks-actions{flex-direction:column;align-items:stretch;} .thanks-actions > *{justify-content:center;} .tag-other-input{max-width:none;} }
 
 html:not(.lang-hi) .thanks-actions .btn-ghost{font-family:var(--f-mono);}
+
+/* District dropdown (tick one or more, or All) */
+#district-chips{margin:0;}
+.district-dd{position:relative;max-width:520px;margin-top:4px;}
+.district-dd-btn{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;text-align:left;cursor:pointer;color:var(--sage);font:inherit;background:var(--cloud);}
+.district-dd-btn.has-value{color:var(--forest);}
+.district-dd-btn .dd-caret{flex:none;color:var(--forest);transition:transform .2s ease;}
+.district-dd.open .dd-caret{transform:rotate(180deg);}
+.district-dd.open .district-dd-btn{border-color:var(--forest);}
+.district-dd-panel{position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:40;max-height:340px;overflow-y:auto;background:var(--cloud);border:1px solid var(--forest);box-shadow:0 14px 34px rgba(26,58,10,.18);}
+.district-dd-panel[hidden]{display:none;}
+.dd-row{display:flex;align-items:center;gap:12px;padding:11px 16px;cursor:pointer;border-bottom:1px solid rgba(122,158,107,.28);color:var(--forest);font-size:15px;}
+.dd-row:hover{background:var(--light-sage);} .dd-row.on{background:rgba(220,228,213,.7);}
+.dd-row input{width:18px;height:18px;accent-color:var(--forest);flex:none;cursor:pointer;}
+.dd-all{font-weight:600;}
+.dd-foot{position:sticky;bottom:0;padding:10px 14px;background:var(--cloud);border-top:1px solid var(--sage);text-align:right;}
+.dd-done{padding:9px 22px;border-radius:40px;border:1.5px solid var(--forest);background:var(--forest);color:var(--cloud);font:600 11px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;cursor:pointer;}
+.dd-done:hover{background:var(--pine);}
+html.lang-hi .dd-done{font-size:14px;letter-spacing:0;text-transform:none;} html.lang-hi .dd-row{font-size:17px;}
+@media (max-width:860px) and (max-aspect-ratio:1/1){
+  .district-dd{max-width:none;} .dd-row{font-size:calc(var(--m)*14);padding:calc(var(--m)*12) calc(var(--m)*14);} .dd-done{font-size:calc(var(--m)*10);}
+  html.lang-hi .dd-row{font-size:calc(var(--m)*15.5);} .district-dd-panel{max-height:calc(var(--m)*320);}
+}

@@ -906,7 +906,7 @@ function recEl(){ return document.querySelector('#contribution-fields .rec'); }
 function recAllowedHere(){ return FORMS[formType].fields.some(k => FIELD[k].name === 'audio'); }
 function recSetInputRequired(){                                  // a recording made here counts as the file for a "recording required" form
   const inp = document.querySelector('#contribution-fields input[type=file][name=audio]'); if (!inp) return;
-  const f = FORMS[formType].fields.map(k => FIELD[k]).find(x => x.name === 'audio'); inp.required = !!(f && f.req && !REC.file);
+  const f = FORMS[formType].fields.map(k => FIELD[k]).find(x => x.name === 'audio'); inp.required = !!(f && fieldReq(Object.keys(FIELD).find(k => FIELD[k] === f)) && !REC.file);
 }
 function recRender(){
   const box = recEl(); if (!box) return;
@@ -1016,8 +1016,8 @@ const STORY_TAGS = ['Lullaby', 'Folk tale', 'Legend', 'Bedtime story'];
 // Every box a form can show. "label", "ph" and hints are keys into i18n.js.
 const FIELD = {
   title:        { name: 'title',           kind: 'input', label: 'f.title', ph: 'f.titlePh', req: true, convert: true },
-  titleRoman:   { name: 'title_roman',     kind: 'input', label: 'f.titleRoman', ph: 'f.titleRomanPh', req: true },
-  tags:         { name: 'tags',            kind: 'tags',  label: 'f.tags' },
+  titleRoman:   { name: 'title_roman',     kind: 'input', label: 'f.titleRoman', ph: 'f.titleRomanPh', req: true, labelOpt: 'f.titleRomanOpt' },
+  tags:         { name: 'tags',            kind: 'tags',  label: 'f.tags', labelReq: 'f.tagsReq' },
   artist:       { name: 'artist_name',     kind: 'input', label: 'f.artist' },
   translator:   { name: 'translator_name', kind: 'input', label: 'f.translator' },
   source:       { name: 'source_name',     kind: 'input', label: 'f.source' },
@@ -1036,7 +1036,8 @@ const FIELD = {
 const FORMS = {
   Word:    { limit: 'short', hindi: 'word',   english: 'word',   fields: ['hindi', 'roman', 'english', 'hindiMeaning', 'audio', 'image'] },
   Phrase:  { limit: 'short', hindi: 'phrase', english: 'word',   fields: ['hindi', 'roman', 'english', 'hindiMeaning', 'context', 'audio', 'image'] },
-  Story:   { limit: 'long',  hindi: 'long',   english: 'long',   fields: ['title', 'titleRoman', 'tags', 'hindi', 'roman', 'english', 'context', 'audio', 'image'] },
+  Story:   { limit: 'long',  hindi: 'long',   english: 'long',   fields: ['title', 'titleRoman', 'tags', 'hindi', 'roman', 'english', 'context', 'audio', 'image'],
+             req: ['title', 'tags', 'roman', 'english'], opt: ['titleRoman'] },        // a story: Hindi title, tag, romanised and English text are compulsory; the English-letter title is not
   Memory:  { limit: 'long',  hindi: 'long',   english: 'long',   fields: ['title', 'titleRoman', 'hindi', 'roman', 'english', 'context', 'audio', 'image'] },
   Recipe:  { limit: 'long',  hindi: 'recipe', english: 'recipe', fields: ['hindi', 'roman', 'english', 'description', 'recipe', 'image'] },
   Song:    { limit: 'long',  hindi: 'long',   english: 'long',   fields: ['title', 'titleRoman', 'artist', 'translator', 'hindi', 'roman', 'english', 'context', 'audio', 'image'] },
@@ -1044,6 +1045,8 @@ const FORMS = {
   Culture: { limit: 'long',  hindi: 'long',   english: 'long',   fields: ['title', 'titleRoman', 'source', 'hindi', 'roman', 'english', 'context', 'audio', 'image'] },
 };
 let formType = 'Word', beforeConvert = {};
+// is this box compulsory in the kind of entry now being filled in?
+const fieldReq = (key) => { const cfg = FORMS[formType], f = FIELD[key]; if (cfg.opt && cfg.opt.includes(key)) return false; if (cfg.req && cfg.req.includes(key)) return true; return !!f.req; };
 
 const wordCount = (s) => (String(s || '').trim().match(/\S+/g) || []).length;
 function limitFor(name){
@@ -1067,8 +1070,10 @@ const HALF = {
 function fieldHTML(key){
   const f = FIELD[key], cfg = FORMS[formType];
   const half = (HALF[formType] || []).includes(key) ? ' half' : '';
-  const label = `${esc(t(f.label))}${f.req ? ' <b>*</b>' : ''}`;
-  const ph = f.ph ? ` placeholder="${esc(t(f.ph))}"` : '', req = f.req ? ' required' : '';
+  const isReq = fieldReq(key);
+  const labelKey = (!isReq && f.labelOpt) ? f.labelOpt : (isReq && f.labelReq) ? f.labelReq : f.label;      // some boxes say "(optional)" in their label only when they are optional
+  const label = `${esc(t(labelKey))}${isReq ? ' <b>*</b>' : ''}`;
+  const ph = f.ph ? ` placeholder="${esc(t(f.ph))}"` : '', req = isReq ? ' required' : '';
   const none = '<span class="field-hint empty"></span>';
   if (f.kind === 'tags')
     return `<div class="field-block${half}"><span class="field-label">${label}</span>${none}
@@ -1281,11 +1286,15 @@ function initSubmissionsPage(){
   });
   chipGrid.dataset.filled = '1';
   buildDistrictChips();
-  $('district-chips').addEventListener('click', (ev) => {
-    const b = ev.target.closest('[data-district]'); if (!b) return;
-    const d = b.dataset.district, on = !b.classList.contains('active');
-    setDistricts(d === 'All' ? (on ? ['All'] : []) : [...selectedDistricts().filter(x => x !== 'All' && x !== d), ...(on ? [d] : [])]);
+  $('district-dd-btn').addEventListener('click', () => toggleDistrictPanel());
+  $('district-chips').addEventListener('change', (ev) => {
+    const i = ev.target.closest('input[data-district]'); if (!i) return;
+    const d = i.dataset.district;
+    setDistricts(d === 'All' ? (i.checked ? ['All'] : []) : [...selectedDistricts().filter(x => x !== 'All' && x !== d), ...(i.checked ? [d] : [])]);
   });
+  $('district-chips').addEventListener('click', (ev) => { if (ev.target.closest('[data-dd-done]')) toggleDistrictPanel(false); });
+  document.addEventListener('click', (ev) => { if (!ev.target.closest('#district-dd')) toggleDistrictPanel(false); });     // click anywhere else: close
+  document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') toggleDistrictPanel(false); });
   $('another-submission').addEventListener('click', anotherSubmission);
 
   const box = $('contribution-fields');
@@ -1320,9 +1329,12 @@ function initSubmissionsPage(){
       if (wordCount(val(f.name)) > lim){ showFormError(t('f.over', lim)); box.querySelector(`[name="${f.name}"]`).focus(); return; }
     }
     if (['Word', 'Phrase', 'Recipe'].includes(formType) && !val('original_text') && !val('transliteration')){ showFormError(t('f.errHindiOrRoman')); return; }
-    if (!selectedDistricts().length){ showFormError(t('f.errDistrict')); $('district-chips').scrollIntoView({ block: 'center' }); return; }
+    if (!val('contributor_name')){ showFormError(t('f.errName')); const nm = form.querySelector('[name="contributor_name"]'); if (nm){ nm.value = ''; nm.scrollIntoView({ block: 'center' }); nm.focus(); } return; }   // a name made only of spaces does not count
+    if (cfg.fields.includes('title') && !hasDev(val('title'))){ showFormError(t('f.errTitleHindi')); const ti = box.querySelector('[name="title"]'); if (ti){ ti.scrollIntoView({ block: 'center' }); ti.focus(); } return; }   // the title must be in Hindi script
+    if (!selectedDistricts().length){ showFormError(t('f.errDistrict')); $('district-dd').scrollIntoView({ block: 'center' }); return; }
     { const oc = box.querySelector('.tag-chip[data-tag="__other__"]'), oi = box.querySelector('[name="tag_other"]');
       if (oc && oc.classList.contains('active') && oi && !chosenTags().some(x => !STORY_TAGS.includes(x))){ showFormError(t('f.errTagOther')); oi.focus(); return; } }
+    if (cfg.fields.includes('tags') && fieldReq('tags') && !chosenTags().length){ showFormError(t('f.errTags')); const c0 = box.querySelector('.tag-chip'); if (c0) c0.scrollIntoView({ block: 'center' }); return; }
     const audioFile = (REC.file && recAllowedHere()) ? REC.file : fd.get('audio'), imageFile = fd.get('image');
     if (audioFile && audioFile.size > MAX_AUDIO_MB * 1024 * 1024){ showFormError(t('f.errAudioBig', MAX_AUDIO_MB)); return; }
     btn.disabled = true; btn.textContent = t('sub.sending');
@@ -1390,7 +1402,7 @@ function router(){
   if (route === 'districts') renderDistricts();
   if (route === 'dictionary') renderDictionary($('dict-search').value);
   if (route === 'submissions') {
-    initSubmissionsPage();
+    try { initSubmissionsPage(); } catch (e){ console.error('initSubmissionsPage', e); }
     const dd = params.get('district');                                  // coming from a district page: that district is pre-selected
     if (dd && DISTRICTS.includes(dd)) setDistricts([dd]);
     if (lastRoute !== 'submissions'){ $('submission-form-wrap').style.display = ''; $('submission-thanks').style.display = 'none'; }
@@ -1460,17 +1472,32 @@ function loadHindiFonts(){            // only downloaded when Hindi is actually 
   document.head.appendChild(l);
   if (document.fonts) document.fonts.addEventListener('loadingdone', alignCounter);
 }
-// ----- districts: tick one or more, or "All districts" -----
-const selectedDistricts = () => [...document.querySelectorAll('#district-chips .tag-chip.active')].map(b => b.dataset.district);
+// ----- districts: a dropdown with tick-boxes: tick one or more, or "All districts" -----
+const selectedDistricts = () => [...document.querySelectorAll('#district-chips input[data-district]:checked')].map(b => b.dataset.district);
+function updateDistrictLabel(){                                  // what the closed dropdown says
+  const txt = $('district-dd-text'), btn = $('district-dd-btn'); if (!txt || !btn) return;
+  const sel = selectedDistricts(); let label;
+  if (!sel.length) label = t('f.districtSelect');
+  else if (sel.includes('All')) label = t('f.districtAll');
+  else { const names = DISTRICTS.filter(d => sel.includes(d)).map(districtName); label = names.length <= 2 ? names.join(', ') : names.slice(0, 2).join(', ') + ' +' + (names.length - 2); }
+  txt.textContent = label; btn.classList.toggle('has-value', sel.length > 0);
+}
 function setDistricts(list){
   const set = new Set(list);
-  document.querySelectorAll('#district-chips .tag-chip').forEach(b => { const on = set.has(b.dataset.district); b.classList.toggle('active', on); b.setAttribute('aria-pressed', String(on)); });
+  document.querySelectorAll('#district-chips input[data-district]').forEach(i => { i.checked = set.has(i.dataset.district); i.closest('.dd-row').classList.toggle('on', i.checked); });
+  updateDistrictLabel();
 }
-function buildDistrictChips(){                                   // (re)draws the chips in the current language, keeping what is ticked
+function buildDistrictChips(){                                   // (re)draws the list in the current language, keeping what is ticked
   const keep = selectedDistricts(), box = $('district-chips');
   box.innerHTML = [['All', t('f.districtAll')], ...DISTRICTS.map(d => [d, districtName(d)])]
-    .map(([d, label]) => `<button type="button" class="tag-chip" data-district="${esc(d)}" aria-pressed="false">${esc(label)}</button>`).join('');
+    .map(([d, label]) => `<label class="dd-row${d === 'All' ? ' dd-all' : ''}"><input type="checkbox" data-district="${esc(d)}"/><span>${esc(label)}</span></label>`).join('')
+    + `<div class="dd-foot"><button type="button" class="dd-done" data-dd-done>${esc(t('f.done'))}</button></div>`;
   setDistricts(keep);
+}
+function toggleDistrictPanel(open){                              // no argument: flip it
+  const p = $('district-chips'), b = $('district-dd-btn'); if (!p || !b) return;
+  const want = open === undefined ? p.hidden : open;
+  p.hidden = !want; b.setAttribute('aria-expanded', String(want)); $('district-dd').classList.toggle('open', want);
 }
 function districtValue(){                                        // what is sent: "All", or a list such as "Shimla, Kullu"
   const sel = selectedDistricts();
@@ -1480,7 +1507,7 @@ function districtValue(){                                        // what is sent
 // ----- after sending: a fresh form, whether the visitor goes home or makes another submission -----
 function resetSubmitPage(){
   const form = $('submission-form'); form.reset(); recReset();
-  setDistricts([]); beforeConvert = {}; $('form-error').hidden = true;
+  setDistricts([]); toggleDistrictPanel(false); beforeConvert = {}; $('form-error').hidden = true;
   const chipGrid = $('type-chip-grid'); chipGrid.querySelectorAll('button').forEach((b, i) => b.classList.toggle('active', i === 0));
   $('contribution-fields').dataset.type = ''; renderContributionFields('Word');
 }
@@ -1518,7 +1545,7 @@ function applyLang(l){
   });
   const tg = $('lang-toggle'); tg.textContent = t('lang.toggle'); tg.setAttribute('aria-label', t('lang.toggleAria'));
   document.querySelectorAll('[data-set-lang]').forEach(b => b.classList.toggle('active', b.dataset.setLang === LANG));
-  relabelForm();
+  try { relabelForm(); } catch (e){ console.error('relabelForm', e); }                // a problem in the Submit form must never stop the menu working
   if (READY){ renderShared(); router(); syncMenuHeight(); }          // redraw everything the script builds itself
 }
 const gate = $('lang-gate');

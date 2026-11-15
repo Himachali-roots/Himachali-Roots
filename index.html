@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="styles.css"/>
+<link rel="stylesheet" href="styles.css?v=bf0c9461c6"/>
 </head>
 <body>
 <!-- NAV -->
@@ -200,8 +200,11 @@
         <section class="form-section">
           <p class="eyebrow" data-i18n="sub.s2">02 · Where is this from</p>
           <div class="field-block district-block"><span class="field-label" data-i18n="sub.district">District <b>*</b></span>
-            <p class="field-hint" data-i18n="sub.districtHint">Choose one or more. If it belongs to the whole of Himachal, choose “All districts”.</p>
-            <div class="tag-row" id="district-chips" role="group"></div>
+            <p class="field-hint" data-i18n="sub.districtHint">Choose one or more from the list. If it belongs to the whole of Himachal, choose “All districts”.</p>
+            <div class="district-dd" id="district-dd">
+              <button type="button" class="field district-dd-btn" id="district-dd-btn" aria-haspopup="true" aria-expanded="false"><span id="district-dd-text">Select districts</span><span class="dd-caret" aria-hidden="true">▾</span></button>
+              <div class="district-dd-panel" id="district-chips" role="group" hidden></div>
+            </div>
           </div>
           <div class="form-row-2">
             <label class="field-block"><span class="field-label" data-i18n="sub.dialect">Dialect or language name</span><input class="field" name="dialect" placeholder="eg. Mandyali, Kangri, Pahari" data-i18n-ph="sub.dialectPh"/></label>
@@ -352,10 +355,10 @@
   </div>
 </div>
 
-<script src="i18n.js"></script>
-<script src="districts.js"></script>
-<script src="translit.js"></script>
-<script src="backgrounds.js"></script>
-<script src="app.js"></script>
+<script src="i18n.js?v=01953d4cff"></script>
+<script src="districts.js?v=dcfccc72e0"></script>
+<script src="translit.js?v=ed70a958fa"></script>
+<script src="backgrounds.js?v=ccd6bc1ae9"></script>
+<script src="app.js?v=5688425422"></script>
 </body>
 </html>

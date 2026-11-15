@@ -107,7 +107,7 @@ const placeLine = (e) => {
   return [dialect, e.village].filter(Boolean).join(' · ');
 };
 // anything beyond the basics of an entry (the Hindi meaning is an extra only while the site is in English, since in Hindi it IS the meaning)
-const hasExtras = (e) => Boolean((LANG === 'en' && e.descHi) || e.context || e.image || e.memory || e.video);
+const hasExtras = (e) => Boolean((LANG === 'en' && e.descHi) || (LANG === 'hi' && e.descHi && e.desc) || e.context || e.image || e.memory || e.video);
 const splitList = (s) => String(s || '').split(',').map(x => x.trim()).filter(Boolean);
 const splitVideos = (s) => String(s || '').split('|').map(x => x.trim()).filter(Boolean);     // several videos in one cell are separated with |
 function shuffled(list){
@@ -122,13 +122,15 @@ function shuffled(list){
 //   [village] village   [tags] story tags   [description] [recipe] for recipes   [artist] [source] [translator] credits
 // The card shows only the text before the first marker; the rest appears as sections in Read more. (No extra columns needed.
 // If the table does have real columns with these names, those are used instead.)
-const SECTION_MARK = /\s*\[(hindi|context|description|recipe|picture|memory|village|tags|artist|source|translator)\]\s*/ig;
+const SECTION_MARK = /\s*\[(hindi|context|description|recipe|picture|memory|village|tags|artist|source|translator|title)\]\s*/ig;
 function parseSections(s){
   const p = String(s || '').split(SECTION_MARK), parts = {};
   for (let i = 1; i < p.length; i += 2){ const k = p[i].toLowerCase(), v = (p[i + 1] || '').trim(); if (v) parts[k] = parts[k] ? parts[k] + '\n\n' + v : v; }
   return { main: p[0].trim(), parts };
 }
 const firstLine = (s) => String(s || '').split('\n')[0].trim();
+const MARKER_RE = /\[(hindi|context|description|recipe|picture|memory|village|tags|artist|source|translator|title)\]/ig;
+const defuse = (s) => String(s || '').replace(MARKER_RE, '($1)');      // a visitor typing "[picture]" in a box must not create a picture section
 const isDev = (s) => /[\u0900-\u097F]/.test(s || '');       // is this text written in Hindi script? (those titles need more line spacing, even on the English site)
 function normalizeRow(row, i){
   const title = str(row, 'title', 'word');
@@ -153,6 +155,7 @@ function normalizeRow(row, i){
     memoryHi: dh.parts.memory || str(row, 'memory_hi'),
     context: X.context || '',
     village: str(row, 'village') || X.village || '',
+    titleRoman: str(row, 'title_roman', 'title_transliteration') || firstLine(X.title) || '',     // the title in English letters, e.g. "Morni"
     original,
     district: str(row, 'district', 'region') || 'All',
     type: normType(str(row, 'type', 'entry_type')),
@@ -269,6 +272,7 @@ function entryCardHTML(e, cls = '', style = 'position:relative'){
     <p class="entry-eyebrow">${esc(typeName(e.type))}${esc(tag)} · ${esc(districtLabel(e))}</p>
     ${placeLine(e) ? `<p class="entry-place">${esc(placeLine(e))}</p>` : ''}
     <h3 class="entry-title${isDev(titleOf(e)) ? ' dev' : ''}">${esc(titleOf(e))}</h3>
+    ${(LANG === 'en' && e.titleRoman && !compact && e.titleRoman.trim().toLowerCase() !== titleOf(e).trim().toLowerCase()) ? `<p class="entry-trans title-roman">${esc(e.titleRoman)}</p>` : ''}
     ${!long && e.trans ? `<p class="entry-trans">${esc(e.trans)}</p>` : ''}
     <p class="entry-desc">${esc(long ? preview(cardText(e)) : descOf(e))}</p>
     ${long ? `<button class="read-more-btn" type="button" data-entry="${esc(e.id)}">${esc(t('ui.readMore'))}</button>` : ''}
@@ -361,11 +365,13 @@ function openEntry(id){
   $('entry-modal-body').innerHTML = `
     <p class="entry-eyebrow">${esc(typeName(e.type))} · ${esc(districtLabel(e))}</p>
     <h2 class="modal-title${isDev(titleOf(e)) ? ' dev' : ''}" id="modal-title">${esc(titleOf(e))}</h2>
+    ${(LANG === 'en' && e.titleRoman && !(e.type === 'Word' || e.type === 'Phrase') && e.titleRoman.trim().toLowerCase() !== titleOf(e).trim().toLowerCase()) ? `<p class="modal-sub title-roman">${esc(e.titleRoman)}</p>` : ''}
     ${lines.length ? `<p class="modal-credit">${lines.map(l => `<span>${esc(l)}</span>`).join('')}</p>` : ''}
     ${tags}
     ${e.audio ? `<button class="audio-btn-inline modal-top-play" type="button" data-audio-id="${esc(e.id)}-top" data-audio-src="${esc(e.audio)}">${esc(t('ui.play'))}</button>` : ''}
     ${body}
     ${(LANG === 'en' && e.descHi) ? modalSection(t('ui.hindiMeaning'), e.descHi, 'hindi') : ''}
+    ${(LANG === 'hi' && e.descHi && e.desc) ? modalSection(t('ui.englishMeaning'), e.desc, 'english') : ''}
     ${(e.audio && !(e.type === 'Word' || e.type === 'Phrase')) ? `<section class="modal-section listen"><p class="eyebrow">${esc(t('ui.listen'))}</p><button class="audio-btn-inline" type="button" data-audio-id="${esc(e.id)}-full" data-audio-src="${esc(e.audio)}">${esc(t('ui.play'))}</button></section>` : ''}
     ${pic ? `<section class="modal-section picture"><p class="eyebrow">${esc(t('ui.picture'))}</p>${pic}</section>` : ''}
     ${vids}
@@ -713,9 +719,9 @@ const soundKey = (s) => devLoose(toDev(String(s || '')));
 
 function entryKeys(e){
   if (e._k) return e._k;
-  const names = [e.title, e.trans, ...e.spellings].filter(Boolean);
+  const names = [e.title, e.trans, e.titleRoman, ...e.spellings].filter(Boolean);
   e._k = {
-    title: fold(e.title), roman: fold(e.trans), alias: e.spellings.map(fold),
+    title: fold(e.title), roman: fold(e.trans), alias: [...e.spellings, e.titleRoman].filter(Boolean).map(fold),
     meaning: fold(e.desc), hindi: fold(e.descHi),
     extra: fold([e.original, e.description, e.type, e.tags.join(' '), e.district].join(' ')),
     sound: new Set(names.map(soundKey).filter(Boolean)),
@@ -1009,7 +1015,8 @@ const STORY_TAGS = ['Lullaby', 'Folk tale', 'Legend', 'Bedtime story'];
 
 // Every box a form can show. "label", "ph" and hints are keys into i18n.js.
 const FIELD = {
-  title:        { name: 'title',           kind: 'input', label: 'f.title', ph: 'f.titlePh', req: true },
+  title:        { name: 'title',           kind: 'input', label: 'f.title', ph: 'f.titlePh', req: true, convert: true },
+  titleRoman:   { name: 'title_roman',     kind: 'input', label: 'f.titleRoman', ph: 'f.titleRomanPh', req: true },
   tags:         { name: 'tags',            kind: 'tags',  label: 'f.tags' },
   artist:       { name: 'artist_name',     kind: 'input', label: 'f.artist' },
   translator:   { name: 'translator_name', kind: 'input', label: 'f.translator' },
@@ -1029,14 +1036,14 @@ const FIELD = {
 const FORMS = {
   Word:    { limit: 'short', hindi: 'word',   english: 'word',   fields: ['hindi', 'roman', 'english', 'hindiMeaning', 'audio', 'image'] },
   Phrase:  { limit: 'short', hindi: 'phrase', english: 'word',   fields: ['hindi', 'roman', 'english', 'hindiMeaning', 'context', 'audio', 'image'] },
-  Story:   { limit: 'long',  hindi: 'long',   english: 'long',   fields: ['title', 'tags', 'hindi', 'roman', 'english', 'context', 'audio', 'image'] },
-  Memory:  { limit: 'long',  hindi: 'long',   english: 'long',   fields: ['title', 'hindi', 'roman', 'english', 'context', 'audio', 'image'] },
+  Story:   { limit: 'long',  hindi: 'long',   english: 'long',   fields: ['title', 'titleRoman', 'tags', 'hindi', 'roman', 'english', 'context', 'audio', 'image'] },
+  Memory:  { limit: 'long',  hindi: 'long',   english: 'long',   fields: ['title', 'titleRoman', 'hindi', 'roman', 'english', 'context', 'audio', 'image'] },
   Recipe:  { limit: 'long',  hindi: 'recipe', english: 'recipe', fields: ['hindi', 'roman', 'english', 'description', 'recipe', 'image'] },
-  Song:    { limit: 'long',  hindi: 'long',   english: 'long',   fields: ['title', 'artist', 'translator', 'hindi', 'roman', 'english', 'context', 'audio', 'image'] },
-  Audio:   { limit: 'long',  hindi: 'long',   english: 'long',   fields: ['title', 'hindi', 'roman', 'english', 'context', 'audioReq', 'image'] },
-  Culture: { limit: 'long',  hindi: 'long',   english: 'long',   fields: ['title', 'source', 'hindi', 'roman', 'english', 'context', 'audio', 'image'] },
+  Song:    { limit: 'long',  hindi: 'long',   english: 'long',   fields: ['title', 'titleRoman', 'artist', 'translator', 'hindi', 'roman', 'english', 'context', 'audio', 'image'] },
+  Audio:   { limit: 'long',  hindi: 'long',   english: 'long',   fields: ['title', 'titleRoman', 'hindi', 'roman', 'english', 'context', 'audioReq', 'image'] },
+  Culture: { limit: 'long',  hindi: 'long',   english: 'long',   fields: ['title', 'titleRoman', 'source', 'hindi', 'roman', 'english', 'context', 'audio', 'image'] },
 };
-let formType = 'Word', beforeConvert = null;
+let formType = 'Word', beforeConvert = {};
 
 const wordCount = (s) => (String(s || '').trim().match(/\S+/g) || []).length;
 function limitFor(name){
@@ -1049,12 +1056,12 @@ function limitFor(name){
 const HALF = {
   Word: ['hindi', 'roman', 'english', 'hindiMeaning', 'audio', 'image'],
   Phrase: ['hindi', 'roman', 'english', 'hindiMeaning', 'audio', 'image'],
-  Story: ['audio', 'image'],
-  Memory: ['audio', 'image'],
+  Story: ['title', 'titleRoman', 'audio', 'image'],
+  Memory: ['title', 'titleRoman', 'audio', 'image'],
   Recipe: ['hindi', 'roman'],
-  Song: ['artist', 'translator', 'audio', 'image'],
-  Audio: ['audioReq', 'image'],
-  Culture: ['title', 'source', 'audio', 'image'],
+  Song: ['title', 'titleRoman', 'artist', 'translator', 'audio', 'image'],
+  Audio: ['title', 'titleRoman', 'audioReq', 'image'],
+  Culture: ['title', 'titleRoman', 'audio', 'image'],
 };
 
 function fieldHTML(key){
@@ -1065,7 +1072,12 @@ function fieldHTML(key){
   const none = '<span class="field-hint empty"></span>';
   if (f.kind === 'tags')
     return `<div class="field-block${half}"><span class="field-label">${label}</span>${none}
-      <div class="tag-row">${STORY_TAGS.map(tg => `<button type="button" class="tag-chip" data-tag="${esc(tg)}" aria-pressed="false">${esc(typeName(tg))}</button>`).join('')}</div><span class="field-extra"></span></div>`;
+      <div class="tag-row">${STORY_TAGS.map(tg => `<button type="button" class="tag-chip" data-tag="${esc(tg)}" aria-pressed="false">${esc(typeName(tg))}</button>`).join('')}<button type="button" class="tag-chip" data-tag="__other__" aria-pressed="false">${esc(t('f.tagOther'))}</button></div>
+      <span class="field-extra"><input class="field tag-other-input" name="tag_other" maxlength="80" placeholder="${esc(t('f.tagOtherPh'))}" autocomplete="off" hidden/></span></div>`;
+  if (f.kind === 'input' && f.convert)                      // the title: a one-line box that can turn English letters into Hindi
+    return `<div class="field-block${half}" data-field="${f.name}"><label class="field-label" for="f-${f.name}">${label}</label>${none}<input class="field" id="f-${f.name}" name="${f.name}"${ph}${req} autocomplete="off"/>
+      <div class="field-extra"><div class="convert-row"><button type="button" class="convert-btn" data-convert="${f.name}">${esc(t('f.convert'))}</button><button type="button" class="convert-undo" data-undo="${f.name}" hidden>${esc(t('f.undo'))}</button></div>
+      <p class="field-hint small">${esc(t('f.convertTip'))}</p><p class="convert-note" data-note hidden>${esc(t('f.convertNote'))}</p></div></div>`;
   if (f.kind === 'input')
     return `<label class="field-block${half}"><span class="field-label">${label}</span>${none}<input class="field" name="${f.name}"${ph}${req} autocomplete="off"/><span class="field-extra"></span></label>`;
   if (f.kind === 'file'){
@@ -1092,6 +1104,23 @@ function fieldHTML(key){
     </div>`;
 }
 
+// the "Other" tag: its text box shows only while the chip is on
+function syncOtherTag(focus){
+  const chip = document.querySelector('#contribution-fields .tag-chip[data-tag="__other__"]'), inp = document.querySelector('#contribution-fields [name="tag_other"]');
+  if (!chip || !inp) return;
+  const on = chip.classList.contains('active'); inp.hidden = !on; if (on && focus) inp.focus();
+}
+// the tags a visitor chose: the ticked chips, plus anything typed under "Other" (up to 3, short, no brackets or commas inside one tag)
+function chosenTags(){
+  const known = [...document.querySelectorAll('#contribution-fields .tag-chip.active')].map(b => b.dataset.tag).filter(x => x !== '__other__');
+  const inp = document.querySelector('#contribution-fields [name="tag_other"]'), other = document.querySelector('#contribution-fields .tag-chip[data-tag="__other__"]');
+  let extra = [];
+  if (inp && other && other.classList.contains('active'))
+    extra = String(inp.value || '').split(/[,;\n]/).map(s => s.replace(/[\[\]]/g, '').replace(/\s+/g, ' ').trim().slice(0, 30)).filter(Boolean);
+  const seen = new Set(known.map(k => k.toLowerCase())), out = [...known];
+  for (const x of extra){ if (!seen.has(x.toLowerCase()) && out.length < known.length + 3){ seen.add(x.toLowerCase()); out.push(x); } }
+  return out;
+}
 // Switching the kind of entry, or the language, redraws the boxes — keep whatever has already been typed or chosen.
 function captureFields(){
   const saved = { text: {}, files: {}, tags: [] };
@@ -1113,6 +1142,7 @@ function restoreFields(saved){
     const on = saved.tags.includes(b.dataset.tag);
     b.classList.toggle('active', on); b.setAttribute('aria-pressed', String(on));
   });
+  syncOtherTag(false);
 }
 function renderContributionFields(type){
   const box = $('contribution-fields');
@@ -1134,25 +1164,32 @@ function updateCounts(){
 }
 
 // "Convert English letters to Hindi" — uses translit.js (works offline, approximate)
-function convertHindiField(){
-  const ta = document.querySelector('#contribution-fields [name="original_text"]');
+function convertHindiField(name = 'original_text'){
+  const ta = document.querySelector(`#contribution-fields [name="${name}"]`);
   if (!ta) return;
+  const other = name === 'title' ? 'title_roman' : 'transliteration';
   let source = ta.value;
-  if (!source.trim()){                                           // nothing typed here yet: use the Romanised box
-    const rm = document.querySelector('#contribution-fields [name="transliteration"]');
+  if (!source.trim()){                                           // nothing typed here yet: use the English-letters box beside it
+    const rm = document.querySelector(`#contribution-fields [name="${other}"]`);
     if (rm && rm.value.trim()) source = rm.value;
   }
-  if (!source.trim()) return;
-  beforeConvert = ta.value;
+  if (!source.trim() || (name === 'title' && hasDev(source))) return;
+  beforeConvert[name] = { value: ta.value, romanWas: null };
+  if (name === 'title'){                                         // what was typed in English letters IS the English title: keep it there too
+    const rm = document.querySelector('#contribution-fields [name="title_roman"]');
+    if (rm && !rm.value.trim()){ rm.value = source.trim(); beforeConvert[name].romanWas = ''; }
+  }
   ta.value = window.romanToDevanagari ? window.romanToDevanagari(source) : source;
   const holder = ta.closest('.field-block');
   holder.querySelector('[data-note]').hidden = false; holder.querySelector('[data-undo]').hidden = false;
   updateCounts();
 }
-function undoConvert(){
-  const ta = document.querySelector('#contribution-fields [name="original_text"]');
-  if (!ta || beforeConvert === null) return;
-  ta.value = beforeConvert; beforeConvert = null;
+function undoConvert(name = 'original_text'){
+  const ta = document.querySelector(`#contribution-fields [name="${name}"]`), b = beforeConvert[name];
+  if (!ta || !b) return;
+  ta.value = b.value;
+  if (b.romanWas !== null){ const rm = document.querySelector('#contribution-fields [name="title_roman"]'); if (rm) rm.value = b.romanWas; }
+  delete beforeConvert[name];
   const holder = ta.closest('.field-block');
   holder.querySelector('[data-note]').hidden = true; holder.querySelector('[data-undo]').hidden = true;
   updateCounts();
@@ -1243,17 +1280,30 @@ function initSubmissionsPage(){
     renderContributionFields(btn.dataset.type);
   });
   chipGrid.dataset.filled = '1';
-  const sel = $('sub-district');
-  DISTRICTS.forEach(d => { const o = document.createElement('option'); o.value = d; o.textContent = districtName(d); sel.appendChild(o); });
+  buildDistrictChips();
+  $('district-chips').addEventListener('click', (ev) => {
+    const b = ev.target.closest('[data-district]'); if (!b) return;
+    const d = b.dataset.district, on = !b.classList.contains('active');
+    setDistricts(d === 'All' ? (on ? ['All'] : []) : [...selectedDistricts().filter(x => x !== 'All' && x !== d), ...(on ? [d] : [])]);
+  });
+  $('another-submission').addEventListener('click', anotherSubmission);
 
   const box = $('contribution-fields');
   renderContributionFields('Word');
   box.addEventListener('input', updateCounts);
   box.addEventListener('click', (ev) => {
     const chip = ev.target.closest('.tag-chip');
-    if (chip){ chip.classList.toggle('active'); chip.setAttribute('aria-pressed', String(chip.classList.contains('active'))); return; }
-    if (ev.target.closest('[data-convert]')){ convertHindiField(); return; }
-    if (ev.target.closest('[data-undo]')) undoConvert();
+    if (chip){ chip.classList.toggle('active'); chip.setAttribute('aria-pressed', String(chip.classList.contains('active'))); syncOtherTag(true); return; }
+    const cb = ev.target.closest('[data-convert]'); if (cb){ convertHindiField(cb.dataset.convert || 'original_text'); return; }
+    const ub = ev.target.closest('[data-undo]'); if (ub) undoConvert(ub.dataset.undo || 'original_text');
+  });
+  box.addEventListener('change', (ev) => {                  // typed the title in English letters first? offer the Hindi title straight away (still editable, with Undo)
+    if (!ev.target.matches || !ev.target.matches('[name="title_roman"]')) return;
+    const tt = box.querySelector('[name="title"]'), v = ev.target.value.trim();
+    if (!tt || tt.value.trim() || !v || hasDev(v)) return;
+    beforeConvert.title = { value: '', romanWas: null };
+    tt.value = window.romanToDevanagari ? window.romanToDevanagari(v) : v;
+    const holder = tt.closest('.field-block'); holder.querySelector('[data-note]').hidden = false; holder.querySelector('[data-undo]').hidden = false;
   });
 
   const form = $('submission-form');
@@ -1261,7 +1311,7 @@ function initSubmissionsPage(){
     ev.preventDefault();
     const btn = $('submit-btn'); $('form-error').hidden = true;
     const fd = new FormData(form);
-    const val = (k) => String(fd.get(k) || '').trim();
+    const val = (k) => defuse(String(fd.get(k) || '').trim());
     const cfg = FORMS[formType];
     // checks the browser cannot do by itself
     for (const key of cfg.fields){
@@ -1270,6 +1320,9 @@ function initSubmissionsPage(){
       if (wordCount(val(f.name)) > lim){ showFormError(t('f.over', lim)); box.querySelector(`[name="${f.name}"]`).focus(); return; }
     }
     if (['Word', 'Phrase', 'Recipe'].includes(formType) && !val('original_text') && !val('transliteration')){ showFormError(t('f.errHindiOrRoman')); return; }
+    if (!selectedDistricts().length){ showFormError(t('f.errDistrict')); $('district-chips').scrollIntoView({ block: 'center' }); return; }
+    { const oc = box.querySelector('.tag-chip[data-tag="__other__"]'), oi = box.querySelector('[name="tag_other"]');
+      if (oc && oc.classList.contains('active') && oi && !chosenTags().some(x => !STORY_TAGS.includes(x))){ showFormError(t('f.errTagOther')); oi.focus(); return; } }
     const audioFile = (REC.file && recAllowedHere()) ? REC.file : fd.get('audio'), imageFile = fd.get('image');
     if (audioFile && audioFile.size > MAX_AUDIO_MB * 1024 * 1024){ showFormError(t('f.errAudioBig', MAX_AUDIO_MB)); return; }
     btn.disabled = true; btn.textContent = t('sub.sending');
@@ -1286,12 +1339,12 @@ function initSubmissionsPage(){
           image_url = await uploadFile(IMAGE_BUCKET, small);
         } catch (e){ throw (e instanceof SubmitError && e.message) ? e : new SubmitError(t('sub.errImage'), e.details || e.message); }
       }
-      const tags = [...box.querySelectorAll('.tag-chip.active')].map(b => b.dataset.tag).join(', ');
+      const tags = chosenTags().join(', ');
       const firstLine = (s) => s.split('\n')[0].trim().slice(0, 120);
       const title = val('title') || firstLine(val('original_text')) || firstLine(val('transliteration')) || firstLine(val('translation'));
       const all = {
-        type: formType, district: val('district'), dialect: val('dialect'), village: val('village'),
-        title, original_text: val('original_text'), transliteration: val('transliteration'), translation: val('translation'),
+        type: formType, district: districtValue(), dialect: val('dialect'), village: val('village'),
+        title, title_roman: val('title_roman'), original_text: val('original_text'), transliteration: val('transliteration'), translation: val('translation'),
         translation_hi: val('translation_hi'), context: val('context'), description: val('description'), recipe: val('recipe'),
         artist_name: val('artist_name'), translator_name: val('translator_name'), source_name: val('source_name'), tags, audio_url, image_url,
         contributor_name: val('contributor_name'), contributor_email: val('contributor_email'), contributor_connection: val('contributor_connection'),
@@ -1299,9 +1352,7 @@ function initSubmissionsPage(){
       };
       // only send what was actually filled in
       await postSubmission(Object.fromEntries(Object.entries(all).filter(([, v]) => v !== '')));
-      form.reset(); recReset();
-      chipGrid.querySelectorAll('button').forEach((b, i) => b.classList.toggle('active', i === 0));
-      box.dataset.type = ''; renderContributionFields('Word');
+      resetSubmitPage();
       $('submission-form-wrap').style.display = 'none';
       $('submission-thanks').style.display = 'block';
       window.scrollTo(0, 0);
@@ -1341,7 +1392,7 @@ function router(){
   if (route === 'submissions') {
     initSubmissionsPage();
     const dd = params.get('district');                                  // coming from a district page: that district is pre-selected
-    if (dd && DISTRICTS.includes(dd)) $('sub-district').value = dd;
+    if (dd && DISTRICTS.includes(dd)) setDistricts([dd]);
     if (lastRoute !== 'submissions'){ $('submission-form-wrap').style.display = ''; $('submission-thanks').style.display = 'none'; }
   }
   if (route !== lastRoute && route !== 'archive') window.scrollTo(0, 0);
@@ -1409,11 +1460,39 @@ function loadHindiFonts(){            // only downloaded when Hindi is actually 
   document.head.appendChild(l);
   if (document.fonts) document.fonts.addEventListener('loadingdone', alignCounter);
 }
+// ----- districts: tick one or more, or "All districts" -----
+const selectedDistricts = () => [...document.querySelectorAll('#district-chips .tag-chip.active')].map(b => b.dataset.district);
+function setDistricts(list){
+  const set = new Set(list);
+  document.querySelectorAll('#district-chips .tag-chip').forEach(b => { const on = set.has(b.dataset.district); b.classList.toggle('active', on); b.setAttribute('aria-pressed', String(on)); });
+}
+function buildDistrictChips(){                                   // (re)draws the chips in the current language, keeping what is ticked
+  const keep = selectedDistricts(), box = $('district-chips');
+  box.innerHTML = [['All', t('f.districtAll')], ...DISTRICTS.map(d => [d, districtName(d)])]
+    .map(([d, label]) => `<button type="button" class="tag-chip" data-district="${esc(d)}" aria-pressed="false">${esc(label)}</button>`).join('');
+  setDistricts(keep);
+}
+function districtValue(){                                        // what is sent: "All", or a list such as "Shimla, Kullu"
+  const sel = selectedDistricts();
+  if (sel.includes('All') || sel.length === DISTRICTS.length) return 'All';
+  return DISTRICTS.filter(d => sel.includes(d)).join(', ');
+}
+// ----- after sending: a fresh form, whether the visitor goes home or makes another submission -----
+function resetSubmitPage(){
+  const form = $('submission-form'); form.reset(); recReset();
+  setDistricts([]); beforeConvert = {}; $('form-error').hidden = true;
+  const chipGrid = $('type-chip-grid'); chipGrid.querySelectorAll('button').forEach((b, i) => b.classList.toggle('active', i === 0));
+  $('contribution-fields').dataset.type = ''; renderContributionFields('Word');
+}
+function anotherSubmission(){
+  resetSubmitPage();
+  $('submission-thanks').style.display = 'none'; $('submission-form-wrap').style.display = '';
+  window.scrollTo(0, 0);
+}
 function relabelForm(){               // the Submit form builds its chips and district list itself
   const chips = $('type-chip-grid');
   chips.querySelectorAll('button[data-type]').forEach(b => b.textContent = typeName(b.dataset.type));
-  const sel = $('sub-district');
-  [...sel.options].forEach(o => { if (o.value) o.textContent = districtName(o.value); });
+  if ($('district-chips')) buildDistrictChips();
   const box = $('contribution-fields');
   if (box && box.dataset.type) renderContributionFields(box.dataset.type);
 }

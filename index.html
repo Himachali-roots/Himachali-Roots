@@ -199,10 +199,11 @@
         </section>
         <section class="form-section">
           <p class="eyebrow" data-i18n="sub.s2">02 · Where is this from</p>
-          <div class="form-row-3">
-            <label class="field-block"><span class="field-label" data-i18n="sub.district">District <b>*</b></span>
-              <select class="field" id="sub-district" name="district" required><option value="" data-i18n="sub.districtPick">Select a district</option></select>
-            </label>
+          <div class="field-block district-block"><span class="field-label" data-i18n="sub.district">District <b>*</b></span>
+            <p class="field-hint" data-i18n="sub.districtHint">Choose one or more. If it belongs to the whole of Himachal, choose “All districts”.</p>
+            <div class="tag-row" id="district-chips" role="group"></div>
+          </div>
+          <div class="form-row-2">
             <label class="field-block"><span class="field-label" data-i18n="sub.dialect">Dialect or language name</span><input class="field" name="dialect" placeholder="eg. Mandyali, Kangri, Pahari" data-i18n-ph="sub.dialectPh"/></label>
             <label class="field-block"><span class="field-label" data-i18n="sub.village">Village or area</span><input class="field" name="village" placeholder="eg. Karsog, Rampur, Bajaura" data-i18n-ph="sub.villagePh"/></label>
           </div>
@@ -234,7 +235,7 @@
       <p class="eyebrow" style="justify-content:center;margin-top:28px" data-i18n="sub.thanksEyebrow">Thank you</p>
       <h1 class="page-heading serif" style="margin-top:14px" data-i18n="sub.thanksHeading">The hills <em>remember.</em></h1>
       <p class="page-subtext" style="margin:14px auto 0;text-align:center" data-i18n="sub.thanksBody">Your contribution is in review. Every voice makes this archive more whole.</p>
-      <a href="#home" class="btn-terra" style="margin-top:28px;display:inline-flex" data-i18n="sub.thanksBtn">Return home</a>
+      <div class="thanks-actions"><a href="#home" class="btn-terra" style="display:inline-flex" data-i18n="sub.thanksBtn">Return home</a><button type="button" class="btn-ghost" id="another-submission" data-i18n="sub.anotherBtn">Another submission</button></div>
     </div>
   </div>
 </main>
